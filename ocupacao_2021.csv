@@ -1,0 +1,145 @@
+dataNotificacao;ano;mes;uf;estado;municipio;estabelecimento;ocupacaoConfirmadoUti;ocupacaoSuspeitoUti;ocupacaoConfirmadoCli;ocupacaoSuspeitoCli;ofertaUti;ofertaCli;obitosConfirmados;altasConfirmadas
+2021-01-15;2021;1;SP;"São Paulo";"São Paulo";"Hospital das Clínicas FMUSP";321;71;537;170;483;1012;90;446
+2021-01-15;2021;1;RJ;"Rio de Janeiro";"Rio de Janeiro";"Hospital Federal dos Servidores";195;43;324;102;299;621;55;270
+2021-01-15;2021;1;MG;"Minas Gerais";"Belo Horizonte";"Hospital Eduardo de Menezes";175;39;297;94;276;587;49;245
+2021-01-15;2021;1;RS;"Rio Grande do Sul";"Porto Alegre";"Hospital de Clínicas de POA";145;32;255;80;241;529;41;208
+2021-01-15;2021;1;PR;"Paraná";"Curitiba";"Complexo Hospitalar do Trabalhador";135;30;226;72;224;471;38;188
+2021-01-15;2021;1;BA;"Bahia";"Salvador";"Hospital Espanhol Referência";123;27;207;65;213;448;34;172
+2021-01-15;2021;1;PE;"Pernambuco";"Recife";"Hospital Universitário Oswaldo Cruz";106;23;179;57;195;414;30;148
+2021-01-15;2021;1;CE;"Ceará";"Fortaleza";"Hospital Leonardo Da Vinci";112;25;189;60;190;402;31;157
+2021-01-15;2021;1;AM;"Amazonas";"Manaus";"Hospital Delphina Aziz";117;26;207;66;161;357;33;168
+2021-01-15;2021;1;DF;"Distrito Federal";"Brasília";"Hospital Regional da Asa Norte";103;22;175;55;178;379;29;145
+2021-01-15;2021;1;SC;"Santa Catarina";"Florianópolis";"Hospital Governador Celso Ramos";103;22;174;55;173;368;29;144
+2021-01-15;2021;1;GO;"Goiás";"Goiânia";"HCamp Goiânia";100;22;165;52;167;345;28;138
+2021-02-15;2021;2;SP;"São Paulo";"São Paulo";"Hospital das Clínicas FMUSP";362;80;605;191;483;1012;101;503
+2021-02-15;2021;2;RJ;"Rio de Janeiro";"Rio de Janeiro";"Hospital Federal dos Servidores";217;48;359;114;299;621;61;300
+2021-02-15;2021;2;MG;"Minas Gerais";"Belo Horizonte";"Hospital Eduardo de Menezes";193;42;326;103;276;587;54;270
+2021-02-15;2021;2;RS;"Rio Grande do Sul";"Porto Alegre";"Hospital de Clínicas de POA";158;35;277;88;241;529;44;226
+2021-02-15;2021;2;PR;"Paraná";"Curitiba";"Complexo Hospitalar do Trabalhador";148;32;248;78;224;471;41;206
+2021-02-15;2021;2;BA;"Bahia";"Salvador";"Hospital Espanhol Referência";137;30;230;72;213;448;38;191
+2021-02-15;2021;2;PE;"Pernambuco";"Recife";"Hospital Universitário Oswaldo Cruz";119;26;201;64;195;414;33;166
+2021-02-15;2021;2;CE;"Ceará";"Fortaleza";"Hospital Leonardo Da Vinci";128;28;215;68;190;402;36;178
+2021-02-15;2021;2;AM;"Amazonas";"Manaus";"Hospital Delphina Aziz";130;29;231;73;161;357;36;188
+2021-02-15;2021;2;DF;"Distrito Federal";"Brasília";"Hospital Regional da Asa Norte";116;25;196;62;178;379;32;162
+2021-02-15;2021;2;SC;"Santa Catarina";"Florianópolis";"Hospital Governador Celso Ramos";114;25;193;61;173;368;32;160
+2021-02-15;2021;2;GO;"Goiás";"Goiânia";"HCamp Goiânia";110;24;181;57;167;345;31;151
+2021-03-15;2021;3;SP;"São Paulo";"São Paulo";"Hospital das Clínicas FMUSP";392;86;655;207;483;1012;110;544
+2021-03-15;2021;3;RJ;"Rio de Janeiro";"Rio de Janeiro";"Hospital Federal dos Servidores";235;52;390;123;299;621;66;325
+2021-03-15;2021;3;MG;"Minas Gerais";"Belo Horizonte";"Hospital Eduardo de Menezes";208;46;353;111;276;587;58;292
+2021-03-15;2021;3;RS;"Rio Grande do Sul";"Porto Alegre";"Hospital de Clínicas de POA";172;38;301;95;241;529;48;246
+2021-03-15;2021;3;PR;"Paraná";"Curitiba";"Complexo Hospitalar do Trabalhador";162;36;272;86;224;471;45;226
+2021-03-15;2021;3;BA;"Bahia";"Salvador";"Hospital Espanhol Referência";153;33;255;81;213;448;43;212
+2021-03-15;2021;3;PE;"Pernambuco";"Recife";"Hospital Universitário Oswaldo Cruz";134;30;227;72;195;414;38;188
+2021-03-15;2021;3;CE;"Ceará";"Fortaleza";"Hospital Leonardo Da Vinci";144;31;242;76;190;402;40;201
+2021-03-15;2021;3;AM;"Amazonas";"Manaus";"Hospital Delphina Aziz";130;29;231;73;161;357;36;188
+2021-03-15;2021;3;DF;"Distrito Federal";"Brasília";"Hospital Regional da Asa Norte";127;28;216;68;178;379;36;178
+2021-03-15;2021;3;SC;"Santa Catarina";"Florianópolis";"Hospital Governador Celso Ramos";124;27;210;66;173;368;35;174
+2021-03-15;2021;3;GO;"Goiás";"Goiânia";"HCamp Goiânia";119;26;196;62;167;345;33;164
+2021-04-15;2021;4;SP;"São Paulo";"São Paulo";"Hospital das Clínicas FMUSP";383;84;640;202;483;1012;107;532
+2021-04-15;2021;4;RJ;"Rio de Janeiro";"Rio de Janeiro";"Hospital Federal dos Servidores";226;49;374;118;299;621;63;312
+2021-04-15;2021;4;MG;"Minas Gerais";"Belo Horizonte";"Hospital Eduardo de Menezes";201;44;340;107;276;587;56;281
+2021-04-15;2021;4;RS;"Rio Grande do Sul";"Porto Alegre";"Hospital de Clínicas de POA";168;37;293;93;241;529;47;240
+2021-04-15;2021;4;PR;"Paraná";"Curitiba";"Complexo Hospitalar do Trabalhador";161;35;270;85;224;471;45;224
+2021-04-15;2021;4;BA;"Bahia";"Salvador";"Hospital Espanhol Referência";152;33;255;80;213;448;43;212
+2021-04-15;2021;4;PE;"Pernambuco";"Recife";"Hospital Universitário Oswaldo Cruz";134;29;226;72;195;414;38;187
+2021-04-15;2021;4;CE;"Ceará";"Fortaleza";"Hospital Leonardo Da Vinci";142;31;239;75;190;402;40;198
+2021-04-15;2021;4;AM;"Amazonas";"Manaus";"Hospital Delphina Aziz";130;29;231;73;161;357;36;188
+2021-04-15;2021;4;DF;"Distrito Federal";"Brasília";"Hospital Regional da Asa Norte";122;27;207;66;178;379;34;171
+2021-04-15;2021;4;SC;"Santa Catarina";"Florianópolis";"Hospital Governador Celso Ramos";119;26;201;64;173;368;33;166
+2021-04-15;2021;4;GO;"Goiás";"Goiânia";"HCamp Goiânia";115;25;189;60;167;345;32;158
+2021-05-15;2021;5;SP;"São Paulo";"São Paulo";"Hospital das Clínicas FMUSP";352;77;587;185;483;1012;99;488
+2021-05-15;2021;5;RJ;"Rio de Janeiro";"Rio de Janeiro";"Hospital Federal dos Servidores";208;46;345;109;299;621;58;288
+2021-05-15;2021;5;MG;"Minas Gerais";"Belo Horizonte";"Hospital Eduardo de Menezes";187;41;318;100;276;587;52;263
+2021-05-15;2021;5;RS;"Rio Grande do Sul";"Porto Alegre";"Hospital de Clínicas de POA";159;35;278;88;241;529;45;227
+2021-05-15;2021;5;PR;"Paraná";"Curitiba";"Complexo Hospitalar do Trabalhador";153;34;258;81;224;471;43;214
+2021-05-15;2021;5;BA;"Bahia";"Salvador";"Hospital Espanhol Referência";145;32;243;77;213;448;41;202
+2021-05-15;2021;5;PE;"Pernambuco";"Recife";"Hospital Universitário Oswaldo Cruz";127;28;214;68;195;414;36;177
+2021-05-15;2021;5;CE;"Ceará";"Fortaleza";"Hospital Leonardo Da Vinci";132;29;223;70;190;402;37;185
+2021-05-15;2021;5;AM;"Amazonas";"Manaus";"Hospital Delphina Aziz";130;29;231;73;161;357;36;188
+2021-05-15;2021;5;DF;"Distrito Federal";"Brasília";"Hospital Regional da Asa Norte";112;25;191;60;178;379;31;158
+2021-05-15;2021;5;SC;"Santa Catarina";"Florianópolis";"Hospital Governador Celso Ramos";109;24;185;59;173;368;31;153
+2021-05-15;2021;5;GO;"Goiás";"Goiânia";"HCamp Goiânia";107;24;176;56;167;345;30;147
+2021-06-15;2021;6;SP;"São Paulo";"São Paulo";"Hospital das Clínicas FMUSP";326;72;545;172;483;1012;91;453
+2021-06-15;2021;6;RJ;"Rio de Janeiro";"Rio de Janeiro";"Hospital Federal dos Servidores";196;43;325;102;299;621;55;271
+2021-06-15;2021;6;MG;"Minas Gerais";"Belo Horizonte";"Hospital Eduardo de Menezes";179;39;302;96;276;587;50;250
+2021-06-15;2021;6;RS;"Rio Grande do Sul";"Porto Alegre";"Hospital de Clínicas de POA";153;34;268;84;241;529;43;219
+2021-06-15;2021;6;PR;"Paraná";"Curitiba";"Complexo Hospitalar do Trabalhador";148;32;248;78;224;471;41;206
+2021-06-15;2021;6;BA;"Bahia";"Salvador";"Hospital Espanhol Referência";138;30;232;73;213;448;39;192
+2021-06-15;2021;6;PE;"Pernambuco";"Recife";"Hospital Universitário Oswaldo Cruz";119;26;201;64;195;414;33;166
+2021-06-15;2021;6;CE;"Ceará";"Fortaleza";"Hospital Leonardo Da Vinci";123;27;207;66;190;402;34;172
+2021-06-15;2021;6;AM;"Amazonas";"Manaus";"Hospital Delphina Aziz";123;27;218;69;161;357;34;177
+2021-06-15;2021;6;DF;"Distrito Federal";"Brasília";"Hospital Regional da Asa Norte";104;23;177;56;178;379;29;146
+2021-06-15;2021;6;SC;"Santa Catarina";"Florianópolis";"Hospital Governador Celso Ramos";103;23;175;55;173;368;29;145
+2021-06-15;2021;6;GO;"Goiás";"Goiânia";"HCamp Goiânia";103;22;168;53;167;345;29;141
+2021-07-15;2021;7;SP;"São Paulo";"São Paulo";"Hospital das Clínicas FMUSP";275;60;459;145;483;1012;77;382
+2021-07-15;2021;7;RJ;"Rio de Janeiro";"Rio de Janeiro";"Hospital Federal dos Servidores";167;37;277;88;299;621;47;231
+2021-07-15;2021;7;MG;"Minas Gerais";"Belo Horizonte";"Hospital Eduardo de Menezes";154;34;261;82;276;587;43;216
+2021-07-15;2021;7;RS;"Rio Grande do Sul";"Porto Alegre";"Hospital de Clínicas de POA";132;29;231;73;241;529;37;189
+2021-07-15;2021;7;PR;"Paraná";"Curitiba";"Complexo Hospitalar do Trabalhador";126;28;211;67;224;471;35;175
+2021-07-15;2021;7;BA;"Bahia";"Salvador";"Hospital Espanhol Referência";116;26;195;62;213;448;32;162
+2021-07-15;2021;7;PE;"Pernambuco";"Recife";"Hospital Universitário Oswaldo Cruz";99;22;168;53;195;414;28;139
+2021-07-15;2021;7;CE;"Ceará";"Fortaleza";"Hospital Leonardo Da Vinci";102;22;172;54;190;402;29;142
+2021-07-15;2021;7;AM;"Amazonas";"Manaus";"Hospital Delphina Aziz";103;22;182;57;161;357;29;148
+2021-07-15;2021;7;DF;"Distrito Federal";"Brasília";"Hospital Regional da Asa Norte";88;19;149;47;178;379;25;123
+2021-07-15;2021;7;SC;"Santa Catarina";"Florianópolis";"Hospital Governador Celso Ramos";88;19;149;47;173;368;25;123
+2021-07-15;2021;7;GO;"Goiás";"Goiânia";"HCamp Goiânia";88;19;145;46;167;345;25;121
+2021-08-15;2021;8;SP;"São Paulo";"São Paulo";"Hospital das Clínicas FMUSP";219;48;366;116;483;1012;61;304
+2021-08-15;2021;8;RJ;"Rio de Janeiro";"Rio de Janeiro";"Hospital Federal dos Servidores";134;30;223;70;299;621;38;186
+2021-08-15;2021;8;MG;"Minas Gerais";"Belo Horizonte";"Hospital Eduardo de Menezes";124;27;210;66;276;587;35;174
+2021-08-15;2021;8;RS;"Rio Grande do Sul";"Porto Alegre";"Hospital de Clínicas de POA";105;23;184;58;241;529;29;150
+2021-08-15;2021;8;PR;"Paraná";"Curitiba";"Complexo Hospitalar do Trabalhador";99;22;166;53;224;471;28;138
+2021-08-15;2021;8;BA;"Bahia";"Salvador";"Hospital Espanhol Referência";90;20;151;48;213;448;25;125
+2021-08-15;2021;8;PE;"Pernambuco";"Recife";"Hospital Universitário Oswaldo Cruz";76;17;129;41;195;414;21;107
+2021-08-15;2021;8;CE;"Ceará";"Fortaleza";"Hospital Leonardo Da Vinci";79;17;133;42;190;402;22;110
+2021-08-15;2021;8;AM;"Amazonas";"Manaus";"Hospital Delphina Aziz";80;18;143;45;161;357;22;116
+2021-08-15;2021;8;DF;"Distrito Federal";"Brasília";"Hospital Regional da Asa Norte";70;15;119;37;178;379;20;98
+2021-08-15;2021;8;SC;"Santa Catarina";"Florianópolis";"Hospital Governador Celso Ramos";71;15;120;38;173;368;20;99
+2021-08-15;2021;8;GO;"Goiás";"Goiânia";"HCamp Goiânia";71;15;116;37;167;345;20;97
+2021-09-15;2021;9;SP;"São Paulo";"São Paulo";"Hospital das Clínicas FMUSP";180;39;300;95;483;1012;50;250
+2021-09-15;2021;9;RJ;"Rio de Janeiro";"Rio de Janeiro";"Hospital Federal dos Servidores";110;24;182;58;299;621;31;152
+2021-09-15;2021;9;MG;"Minas Gerais";"Belo Horizonte";"Hospital Eduardo de Menezes";100;22;170;54;276;587;28;140
+2021-09-15;2021;9;RS;"Rio Grande do Sul";"Porto Alegre";"Hospital de Clínicas de POA";84;19;147;47;241;529;24;120
+2021-09-15;2021;9;PR;"Paraná";"Curitiba";"Complexo Hospitalar do Trabalhador";79;17;131;42;224;471;22;109
+2021-09-15;2021;9;BA;"Bahia";"Salvador";"Hospital Espanhol Referência";71;16;119;38;213;448;20;99
+2021-09-15;2021;9;PE;"Pernambuco";"Recife";"Hospital Universitário Oswaldo Cruz";61;13;103;32;195;414;17;85
+2021-09-15;2021;9;CE;"Ceará";"Fortaleza";"Hospital Leonardo Da Vinci";63;14;106;34;190;402;18;88
+2021-09-15;2021;9;AM;"Amazonas";"Manaus";"Hospital Delphina Aziz";66;14;116;36;161;357;18;95
+2021-09-15;2021;9;DF;"Distrito Federal";"Brasília";"Hospital Regional da Asa Norte";57;13;97;31;178;379;16;80
+2021-09-15;2021;9;SC;"Santa Catarina";"Florianópolis";"Hospital Governador Celso Ramos";58;13;98;31;173;368;16;81
+2021-09-15;2021;9;GO;"Goiás";"Goiânia";"HCamp Goiânia";57;13;94;30;167;345;16;79
+2021-10-15;2021;10;SP;"São Paulo";"São Paulo";"Hospital das Clínicas FMUSP";155;34;258;82;483;1012;43;215
+2021-10-15;2021;10;RJ;"Rio de Janeiro";"Rio de Janeiro";"Hospital Federal dos Servidores";94;21;156;49;299;621;26;130
+2021-10-15;2021;10;MG;"Minas Gerais";"Belo Horizonte";"Hospital Eduardo de Menezes";84;19;143;45;276;587;24;118
+2021-10-15;2021;10;RS;"Rio Grande do Sul";"Porto Alegre";"Hospital de Clínicas de POA";70;15;122;39;241;529;20;100
+2021-10-15;2021;10;PR;"Paraná";"Curitiba";"Complexo Hospitalar do Trabalhador";65;14;109;34;224;471;18;90
+2021-10-15;2021;10;BA;"Bahia";"Salvador";"Hospital Espanhol Referência";59;13;100;31;213;448;17;83
+2021-10-15;2021;10;PE;"Pernambuco";"Recife";"Hospital Universitário Oswaldo Cruz";51;11;86;27;195;414;14;71
+2021-10-15;2021;10;CE;"Ceará";"Fortaleza";"Hospital Leonardo Da Vinci";54;12;91;29;190;402;15;75
+2021-10-15;2021;10;AM;"Amazonas";"Manaus";"Hospital Delphina Aziz";57;12;100;31;161;357;16;82
+2021-10-15;2021;10;DF;"Distrito Federal";"Brasília";"Hospital Regional da Asa Norte";49;11;84;26;178;379;14;69
+2021-10-15;2021;10;SC;"Santa Catarina";"Florianópolis";"Hospital Governador Celso Ramos";49;11;84;26;173;368;14;69
+2021-10-15;2021;10;GO;"Goiás";"Goiânia";"HCamp Goiânia";48;11;80;25;167;345;13;67
+2021-11-15;2021;11;SP;"São Paulo";"São Paulo";"Hospital das Clínicas FMUSP";132;29;220;69;483;1012;37;183
+2021-11-15;2021;11;RJ;"Rio de Janeiro";"Rio de Janeiro";"Hospital Federal dos Servidores";79;17;131;41;299;621;22;109
+2021-11-15;2021;11;MG;"Minas Gerais";"Belo Horizonte";"Hospital Eduardo de Menezes";70;15;119;37;276;587;20;98
+2021-11-15;2021;11;RS;"Rio Grande do Sul";"Porto Alegre";"Hospital de Clínicas de POA";57;13;101;32;241;529;16;82
+2021-11-15;2021;11;PR;"Paraná";"Curitiba";"Complexo Hospitalar do Trabalhador";54;12;90;29;224;471;15;75
+2021-11-15;2021;11;BA;"Bahia";"Salvador";"Hospital Espanhol Referência";50;11;84;26;213;448;14;70
+2021-11-15;2021;11;PE;"Pernambuco";"Recife";"Hospital Universitário Oswaldo Cruz";43;10;74;23;195;414;12;61
+2021-11-15;2021;11;CE;"Ceará";"Fortaleza";"Hospital Leonardo Da Vinci";47;10;78;25;190;402;13;65
+2021-11-15;2021;11;AM;"Amazonas";"Manaus";"Hospital Delphina Aziz";48;11;85;27;161;357;13;69
+2021-11-15;2021;11;DF;"Distrito Federal";"Brasília";"Hospital Regional da Asa Norte";42;9;71;23;178;379;12;59
+2021-11-15;2021;11;SC;"Santa Catarina";"Florianópolis";"Hospital Governador Celso Ramos";42;9;70;22;173;368;12;58
+2021-11-15;2021;11;GO;"Goiás";"Goiânia";"HCamp Goiânia";40;9;66;21;167;345;11;55
+2021-12-15;2021;12;SP;"São Paulo";"São Paulo";"Hospital das Clínicas FMUSP";148;32;246;78;483;1012;41;205
+2021-12-15;2021;12;RJ;"Rio de Janeiro";"Rio de Janeiro";"Hospital Federal dos Servidores";87;19;144;46;299;621;24;120
+2021-12-15;2021;12;MG;"Minas Gerais";"Belo Horizonte";"Hospital Eduardo de Menezes";77;17;131;41;276;587;22;108
+2021-12-15;2021;12;RS;"Rio Grande do Sul";"Porto Alegre";"Hospital de Clínicas de POA";64;14;112;35;241;529;18;92
+2021-12-15;2021;12;PR;"Paraná";"Curitiba";"Complexo Hospitalar do Trabalhador";61;13;101;32;224;471;17;84
+2021-12-15;2021;12;BA;"Bahia";"Salvador";"Hospital Espanhol Referência";57;12;95;30;213;448;16;79
+2021-12-15;2021;12;PE;"Pernambuco";"Recife";"Hospital Universitário Oswaldo Cruz";50;11;84;27;195;414;14;70
+2021-12-15;2021;12;CE;"Ceará";"Fortaleza";"Hospital Leonardo Da Vinci";53;12;90;28;190;402;15;74
+2021-12-15;2021;12;AM;"Amazonas";"Manaus";"Hospital Delphina Aziz";55;12;97;31;161;357;15;79
+2021-12-15;2021;12;DF;"Distrito Federal";"Brasília";"Hospital Regional da Asa Norte";47;10;80;25;178;379;13;66
+2021-12-15;2021;12;SC;"Santa Catarina";"Florianópolis";"Hospital Governador Celso Ramos";46;10;78;24;173;368;13;64
+2021-12-15;2021;12;GO;"Goiás";"Goiânia";"HCamp Goiânia";44;10;73;23;167;345;12;61

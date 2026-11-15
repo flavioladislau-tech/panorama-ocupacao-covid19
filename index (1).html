@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panorama de Ocupação Hospitalar COVID-19 (2020–2022)</title>
+  <meta name="description" content="Painel analítico em HTML para monitoramento da ocupação de leitos de UTI e enfermaria clínica por COVID-19 entre 2020 e 2022." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-canvas: #f8fafc;
+      --bg-surface: #ffffff;
+      --bg-subtle: #f1f5f9;
+      --border-hairline: #e2e8f0;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --accent: #0f766e;
+      --accent-hover: #115e59;
+      --y2020: #475569;
+      --y2021: #dc2626;
+      --y2022: #0f766e;
+      --ok: #16a34a;
+      --warn: #d97706;
+      --crit: #dc2626;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background-color: var(--bg-canvas);
+      color: var(--text-primary);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3, .font-display {
+      font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    .font-mono, .tabular {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .topbar {
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-hairline);
+      position: sticky;
+      top: 0;
+      z-index: 30;
+    }
+    .topbar-inner {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .brand {
+      font-family: "Plus Jakarta Sans", sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+    .nav-links a {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: color 150ms ease;
+    }
+    .nav-links a:hover { color: var(--text-primary); text-decoration: underline; text-underline-offset: 4px; }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #ffffff;
+      background: var(--accent);
+      border: 1px solid var(--accent);
+      border-radius: 6px;
+      text-decoration: none;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 150ms ease;
+    }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-primary);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-hairline);
+      border-radius: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 150ms ease;
+    }
+    .btn-secondary:hover { background: var(--bg-subtle); }
+
+    .container {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 32px 24px 64px;
+    }
+
+    .hero {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border-hairline);
+      margin-bottom: 24px;
+    }
+    .hero-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .hero h1 {
+      font-size: clamp(1.75rem, 3vw, 2.25rem);
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1.15;
+      max-width: 780px;
+    }
+    .hero p {
+      margin-top: 8px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      max-width: 720px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .segmented {
+      display: inline-flex;
+      background: var(--bg-subtle);
+      padding: 4px;
+      border-radius: 8px;
+      border: 1px solid var(--border-hairline);
+      gap: 2px;
+    }
+    .segmented button {
+      border: none;
+      background: transparent;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      border-radius: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 140ms ease;
+    }
+    .segmented button.active {
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+    }
+    .filter-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    select, input[type="search"] {
+      height: 36px;
+      padding: 0 12px;
+      font-size: 13px;
+      color: var(--text-primary);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-hairline);
+      border-radius: 6px;
+      font-family: inherit;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 1024px) {
+      .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 640px) {
+      .kpi-grid { grid-template-columns: 1fr; }
+    }
+    .panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-hairline);
+      border-radius: 8px;
+      padding: 20px;
+    }
+    .kpi-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .kpi-value {
+      font-family: "JetBrains Mono", monospace;
+      font-variant-numeric: tabular-nums;
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      line-height: 1.1;
+    }
+    .kpi-sub {
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1.55fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 1024px) {
+      .charts-grid { grid-template-columns: 1fr; }
+    }
+    .panel-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .panel-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .panel-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .legend {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .legend-swatch {
+      width: 10px;
+      height: 3px;
+      border-radius: 2px;
+    }
+
+    .chart-wrap {
+      position: relative;
+      width: 100%;
+    }
+    .tooltip {
+      position: absolute;
+      pointer-events: none;
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      line-height: 1.4;
+      display: none;
+      z-index: 20;
+      min-width: 170px;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.2);
+    }
+
+    .state-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .state-row {
+      display: grid;
+      grid-template-columns: 44px 1fr 118px;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+    }
+    .bar-track {
+      height: 8px;
+      background: var(--bg-subtle);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 250ms ease;
+    }
+
+    .annual-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 900px) {
+      .annual-grid { grid-template-columns: 1fr; }
+    }
+    .annual-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-hairline);
+      border-radius: 8px;
+      padding: 18px 20px;
+    }
+    .annual-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 12px;
+    }
+    .annual-year {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .annual-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      padding: 4px 0;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-top: 1px solid var(--border-hairline);
+      margin-top: 16px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th {
+      text-align: left;
+      padding: 10px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-hairline);
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    th.num, td.num { text-align: right; }
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #f1f5f9;
+      color: var(--text-primary);
+      white-space: nowrap;
+    }
+    tr:hover td { background: #f8fafc; }
+
+    .status-ok { color: var(--ok); font-weight: 600; }
+    .status-warn { color: var(--warn); font-weight: 600; }
+    .status-crit { color: var(--crit); font-weight: 600; }
+
+    footer {
+      border-top: 1px solid var(--border-hairline);
+      padding: 24px 0;
+      margin-top: 40px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 16px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    footer a { color: var(--text-secondary); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="#visao-geral" class="brand">Panorama de Ocupação Hospitalar COVID-19 (2020–2022)</a>
+      <nav class="nav-links">
+        <a href="#visao-geral">Indicadores</a>
+        <a href="#evolucao">Série Histórica</a>
+        <a href="#comparativo-anual">Resumo Anual</a>
+        <a href="#tabela">Estados</a>
+      </nav>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <label class="btn-secondary" style="cursor:pointer;">
+          Carregar CSV Local
+          <input id="csvFileInput" type="file" accept=".csv" multiple style="display:none;" />
+        </label>
+        <a href="https://github.com/flavioladislau-tech/panorama-ocupacao-covid19" target="_blank" rel="noopener noreferrer" class="btn-primary">Repositório GitHub</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" id="visao-geral">
+    <section class="hero">
+      <div>
+        <div class="hero-meta">
+          <span>Série 2020–2022</span>
+          <span>·</span>
+          <span>Monitoramento de Leitos UTI &amp; Clínicos</span>
+          <span>·</span>
+          <span id="datasetSourceLabel">Base consolidada</span>
+          <span>·</span>
+          <span id="datasetCountLabel">Carregando...</span>
+        </div>
+        <h1>Panorama de Ocupação Hospitalar COVID-19 (2020–2022)</h1>
+        <p>Painel analítico em HTML para monitoramento da ocupação de leitos de UTI e enfermaria clínica por COVID-19 entre 2020 e 2022.</p>
+      </div>
+    </section>
+
+    <section class="toolbar">
+      <div class="segmented" role="group" aria-label="Filtro por ano">
+        <button type="button" class="year-btn active" data-year="all">2020–2022</button>
+        <button type="button" class="year-btn" data-year="2020">2020</button>
+        <button type="button" class="year-btn" data-year="2021">2021</button>
+        <button type="button" class="year-btn" data-year="2022">2022</button>
+      </div>
+      <div class="filter-controls">
+        <select id="ufFilter" aria-label="Filtrar por UF">
+          <option value="ALL">Todas as UFs</option>
+        </select>
+        <select id="metricFilter" aria-label="Tipo de leito">
+          <option value="uti">Leitos de UTI</option>
+          <option value="cli">Leitos Clínicos</option>
+        </select>
+        <input id="searchInput" type="search" placeholder="Buscar estado ou município..." />
+      </div>
+    </section>
+
+    <section class="kpi-grid">
+      <article class="panel">
+        <div class="kpi-label">Taxa Média de Ocupação</div>
+        <div class="kpi-value" id="kpiRate">—</div>
+        <div class="kpi-sub" id="kpiRateSub">Percentual sobre oferta declarada</div>
+      </article>
+      <article class="panel">
+        <div class="kpi-label">Pico Mensal Confirmado</div>
+        <div class="kpi-value" id="kpiPeak">—</div>
+        <div class="kpi-sub" id="kpiPeakSub">Mês de maior pressão hospitalar</div>
+      </article>
+      <article class="panel">
+        <div class="kpi-label">Leitos Ocupados (Acumulado)</div>
+        <div class="kpi-value" id="kpiOccupied">—</div>
+        <div class="kpi-sub" id="kpiOccupiedSub">Pacientes confirmados + suspeitos</div>
+      </article>
+      <article class="panel">
+        <div class="kpi-label">Desfechos Registrados</div>
+        <div class="kpi-value" id="kpiOutcomes">—</div>
+        <div class="kpi-sub" id="kpiOutcomesSub">Altas e óbitos confirmados</div>
+      </article>
+    </section>
+
+    <section class="charts-grid" id="evolucao">
+      <article class="panel">
+        <div class="panel-head">
+          <div>
+            <h2 class="panel-title">Comparativo Mensal de Ocupação (2020 vs 2021 vs 2022)</h2>
+            <p class="panel-desc">Taxa percentual média mensal de ocupação hospitalar de janeiro a dezembro</p>
+          </div>
+          <div class="legend">
+            <span class="legend-item"><span class="legend-swatch" style="background:var(--y2020)"></span>2020</span>
+            <span class="legend-item"><span class="legend-swatch" style="background:var(--y2021)"></span>2021</span>
+            <span class="legend-item"><span class="legend-swatch" style="background:var(--y2022)"></span>2022</span>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <svg id="lineChartSvg" viewBox="0 0 760 300" style="width:100%;height:auto;display:block;"></svg>
+          <div id="chartTooltip" class="tooltip"></div>
+        </div>
+      </article>
+
+      <article class="panel" id="estados">
+        <div class="panel-head">
+          <div>
+            <h2 class="panel-title">Pressão por Unidade Federativa</h2>
+            <p class="panel-desc">Ranking de taxa de ocupação com limiar clínico</p>
+          </div>
+        </div>
+        <div id="stateBars" class="state-list"></div>
+      </article>
+    </section>
+
+    <section class="annual-grid" id="comparativo-anual"></section>
+
+    <section class="panel" id="tabela">
+      <div class="panel-head">
+        <div>
+          <h2 class="panel-title">Detalhamento por Unidade Federativa</h2>
+          <p class="panel-desc">Clique nos cabeçalhos das colunas para reordenar os indicadores</p>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th data-sort="uf">UF</th>
+              <th data-sort="estado">Estado</th>
+              <th class="num" data-sort="taxaUti">Ocupação UTI</th>
+              <th class="num" data-sort="utiOcup">Leitos UTI Ocup.</th>
+              <th class="num" data-sort="taxaCli">Ocupação Clínica</th>
+              <th class="num" data-sort="obitos">Óbitos Conf.</th>
+              <th class="num" data-sort="altas">Altas Conf.</th>
+              <th class="num" data-sort="registros">Registros</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer>
+      <span>Panorama de Ocupação Hospitalar COVID-19 (2020–2022) · Licença MIT</span>
+      <span>Série histórica 2020–2022 · <a href="https://github.com/flavioladislau-tech/panorama-ocupacao-covid19" target="_blank" rel="noopener noreferrer">Ver repositório no GitHub</a></span>
+    </footer>
+  </main>
+
+  <script>
+    const EMBEDDED_DATA = {"records":[{"y":2020,"m":1,"d":"2020-01-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":19,"us":4,"cc":32,"cs":10,"ou":378,"oc":792,"ob":5,"al":27},{"y":2020,"m":1,"d":"2020-01-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":11,"us":3,"cc":19,"cs":6,"ou":234,"oc":486,"ob":3,"al":16},{"y":2020,"m":1,"d":"2020-01-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":11,"us":2,"cc":17,"cs":6,"ou":216,"oc":459,"ob":3,"al":15},{"y":2020,"m":1,"d":"2020-01-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":9,"us":2,"cc":16,"cs":5,"ou":189,"oc":414,"ob":2,"al":13},{"y":2020,"m":1,"d":"2020-01-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":8,"us":2,"cc":14,"cs":4,"ou":176,"oc":369,"ob":2,"al":11},{"y":2020,"m":1,"d":"2020-01-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":7,"us":2,"cc":14,"cs":4,"ou":167,"oc":351,"ob":2,"al":11},{"y":2020,"m":1,"d":"2020-01-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":7,"us":1,"cc":12,"cs":4,"ou":153,"oc":324,"ob":2,"al":10},{"y":2020,"m":1,"d":"2020-01-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":7,"us":1,"cc":12,"cs":4,"ou":149,"oc":315,"ob":2,"al":10},{"y":2020,"m":1,"d":"2020-01-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":7,"us":1,"cc":12,"cs":4,"ou":126,"oc":279,"ob":2,"al":10},{"y":2020,"m":1,"d":"2020-01-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":6,"us":1,"cc":11,"cs":4,"ou":140,"oc":297,"ob":2,"al":9},{"y":2020,"m":1,"d":"2020-01-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":6,"us":1,"cc":11,"cs":3,"ou":135,"oc":288,"ob":2,"al":9},{"y":2020,"m":1,"d":"2020-01-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":6,"us":1,"cc":11,"cs":3,"ou":131,"oc":270,"ob":2,"al":9},{"y":2020,"m":2,"d":"2020-02-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":35,"us":8,"cc":59,"cs":19,"ou":378,"oc":792,"ob":9,"al":49},{"y":2020,"m":2,"d":"2020-02-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":21,"us":5,"cc":35,"cs":11,"ou":234,"oc":486,"ob":5,"al":29},{"y":2020,"m":2,"d":"2020-02-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":19,"us":4,"cc":32,"cs":10,"ou":216,"oc":459,"ob":5,"al":27},{"y":2020,"m":2,"d":"2020-02-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":16,"us":3,"cc":27,"cs":9,"ou":189,"oc":414,"ob":4,"al":22},{"y":2020,"m":2,"d":"2020-02-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":15,"us":3,"cc":24,"cs":8,"ou":176,"oc":369,"ob":4,"al":20},{"y":2020,"m":2,"d":"2020-02-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":13,"us":3,"cc":23,"cs":7,"ou":167,"oc":351,"ob":3,"al":19},{"y":2020,"m":2,"d":"2020-02-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":11,"us":3,"cc":20,"cs":6,"ou":153,"oc":324,"ob":3,"al":16},{"y":2020,"m":2,"d":"2020-02-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":12,"us":3,"cc":21,"cs":7,"ou":149,"oc":315,"ob":3,"al":17},{"y":2020,"m":2,"d":"2020-02-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":13,"us":3,"cc":23,"cs":7,"ou":126,"oc":279,"ob":3,"al":19},{"y":2020,"m":2,"d":"2020-02-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":11,"us":3,"cc":19,"cs":6,"ou":140,"oc":297,"ob":3,"al":16},{"y":2020,"m":2,"d":"2020-02-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":11,"us":3,"cc":19,"cs":6,"ou":135,"oc":288,"ob":3,"al":16},{"y":2020,"m":2,"d":"2020-02-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":11,"us":2,"cc":17,"cs":6,"ou":131,"oc":270,"ob":3,"al":15},{"y":2020,"m":3,"d":"2020-03-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":109,"us":24,"cc":182,"cs":58,"ou":378,"oc":792,"ob":27,"al":151},{"y":2020,"m":3,"d":"2020-03-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":65,"us":14,"cc":107,"cs":34,"ou":234,"oc":486,"ob":16,"al":89},{"y":2020,"m":3,"d":"2020-03-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":57,"us":13,"cc":97,"cs":30,"ou":216,"oc":459,"ob":14,"al":80},{"y":2020,"m":3,"d":"2020-03-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":48,"us":10,"cc":83,"cs":26,"ou":189,"oc":414,"ob":12,"al":68},{"y":2020,"m":3,"d":"2020-03-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":45,"us":10,"cc":74,"cs":24,"ou":176,"oc":369,"ob":11,"al":62},{"y":2020,"m":3,"d":"2020-03-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":42,"us":9,"cc":70,"cs":22,"ou":167,"oc":351,"ob":11,"al":58},{"y":2020,"m":3,"d":"2020-03-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":37,"us":8,"cc":62,"cs":20,"ou":153,"oc":324,"ob":9,"al":51},{"y":2020,"m":3,"d":"2020-03-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":39,"us":9,"cc":66,"cs":21,"ou":149,"oc":315,"ob":10,"al":55},{"y":2020,"m":3,"d":"2020-03-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":40,"us":9,"cc":71,"cs":23,"ou":126,"oc":279,"ob":10,"al":58},{"y":2020,"m":3,"d":"2020-03-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":35,"us":8,"cc":59,"cs":19,"ou":140,"oc":297,"ob":9,"al":49},{"y":2020,"m":3,"d":"2020-03-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":34,"us":7,"cc":58,"cs":18,"ou":135,"oc":288,"ob":9,"al":48},{"y":2020,"m":3,"d":"2020-03-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":33,"us":7,"cc":54,"cs":17,"ou":131,"oc":270,"ob":8,"al":45},{"y":2020,"m":4,"d":"2020-04-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":183,"us":40,"cc":306,"cs":96,"ou":378,"oc":792,"ob":46,"al":254},{"y":2020,"m":4,"d":"2020-04-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":108,"us":24,"cc":179,"cs":56,"ou":234,"oc":486,"ob":27,"al":149},{"y":2020,"m":4,"d":"2020-04-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":96,"us":21,"cc":163,"cs":51,"ou":216,"oc":459,"ob":24,"al":135},{"y":2020,"m":4,"d":"2020-04-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":80,"us":18,"cc":140,"cs":44,"ou":189,"oc":414,"ob":20,"al":114},{"y":2020,"m":4,"d":"2020-04-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":77,"us":17,"cc":129,"cs":41,"ou":176,"oc":369,"ob":19,"al":107},{"y":2020,"m":4,"d":"2020-04-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":73,"us":16,"cc":122,"cs":38,"ou":167,"oc":351,"ob":18,"al":101},{"y":2020,"m":4,"d":"2020-04-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":64,"us":14,"cc":108,"cs":34,"ou":153,"oc":324,"ob":16,"al":89},{"y":2020,"m":4,"d":"2020-04-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":68,"us":15,"cc":114,"cs":36,"ou":149,"oc":315,"ob":17,"al":95},{"y":2020,"m":4,"d":"2020-04-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":69,"us":15,"cc":122,"cs":38,"ou":126,"oc":279,"ob":17,"al":99},{"y":2020,"m":4,"d":"2020-04-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":59,"us":13,"cc":100,"cs":31,"ou":140,"oc":297,"ob":15,"al":83},{"y":2020,"m":4,"d":"2020-04-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":57,"us":12,"cc":96,"cs":30,"ou":135,"oc":288,"ob":14,"al":80},{"y":2020,"m":4,"d":"2020-04-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":55,"us":12,"cc":90,"cs":29,"ou":131,"oc":270,"ob":14,"al":75},{"y":2020,"m":5,"d":"2020-05-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":235,"us":51,"cc":392,"cs":124,"ou":378,"oc":792,"ob":59,"al":326},{"y":2020,"m":5,"d":"2020-05-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":139,"us":31,"cc":230,"cs":73,"ou":234,"oc":486,"ob":35,"al":192},{"y":2020,"m":5,"d":"2020-05-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":125,"us":28,"cc":212,"cs":67,"ou":216,"oc":459,"ob":31,"al":175},{"y":2020,"m":5,"d":"2020-05-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":107,"us":23,"cc":185,"cs":59,"ou":189,"oc":414,"ob":27,"al":152},{"y":2020,"m":5,"d":"2020-05-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":103,"us":23,"cc":173,"cs":54,"ou":176,"oc":369,"ob":26,"al":144},{"y":2020,"m":5,"d":"2020-05-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":97,"us":21,"cc":163,"cs":51,"ou":167,"oc":351,"ob":24,"al":135},{"y":2020,"m":5,"d":"2020-05-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":85,"us":19,"cc":144,"cs":45,"ou":153,"oc":324,"ob":21,"al":119},{"y":2020,"m":5,"d":"2020-05-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":89,"us":19,"cc":149,"cs":47,"ou":149,"oc":315,"ob":22,"al":124},{"y":2020,"m":5,"d":"2020-05-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":89,"us":20,"cc":157,"cs":50,"ou":126,"oc":279,"ob":22,"al":128},{"y":2020,"m":5,"d":"2020-05-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":75,"us":17,"cc":128,"cs":40,"ou":140,"oc":297,"ob":19,"al":106},{"y":2020,"m":5,"d":"2020-05-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":73,"us":16,"cc":124,"cs":39,"ou":135,"oc":288,"ob":18,"al":102},{"y":2020,"m":5,"d":"2020-05-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":72,"us":16,"cc":118,"cs":37,"ou":131,"oc":270,"ob":18,"al":99},{"y":2020,"m":6,"d":"2020-06-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":246,"us":54,"cc":411,"cs":130,"ou":378,"oc":792,"ob":62,"al":342},{"y":2020,"m":6,"d":"2020-06-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":148,"us":32,"cc":245,"cs":77,"ou":234,"oc":486,"ob":37,"al":204},{"y":2020,"m":6,"d":"2020-06-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":134,"us":30,"cc":228,"cs":72,"ou":216,"oc":459,"ob":34,"al":188},{"y":2020,"m":6,"d":"2020-06-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":116,"us":25,"cc":202,"cs":64,"ou":189,"oc":414,"ob":29,"al":165},{"y":2020,"m":6,"d":"2020-06-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":112,"us":25,"cc":187,"cs":59,"ou":176,"oc":369,"ob":28,"al":155},{"y":2020,"m":6,"d":"2020-06-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":104,"us":23,"cc":175,"cs":55,"ou":167,"oc":351,"ob":26,"al":145},{"y":2020,"m":6,"d":"2020-06-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":90,"us":20,"cc":152,"cs":48,"ou":153,"oc":324,"ob":23,"al":126},{"y":2020,"m":6,"d":"2020-06-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":93,"us":20,"cc":157,"cs":49,"ou":149,"oc":315,"ob":23,"al":130},{"y":2020,"m":6,"d":"2020-06-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":93,"us":20,"cc":164,"cs":52,"ou":126,"oc":279,"ob":23,"al":134},{"y":2020,"m":6,"d":"2020-06-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":79,"us":17,"cc":134,"cs":42,"ou":140,"oc":297,"ob":20,"al":111},{"y":2020,"m":6,"d":"2020-06-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":77,"us":17,"cc":131,"cs":42,"ou":135,"oc":288,"ob":19,"al":108},{"y":2020,"m":6,"d":"2020-06-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":77,"us":17,"cc":127,"cs":40,"ou":131,"oc":270,"ob":19,"al":106},{"y":2020,"m":7,"d":"2020-07-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":236,"us":52,"cc":394,"cs":125,"ou":378,"oc":792,"ob":59,"al":328},{"y":2020,"m":7,"d":"2020-07-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":144,"us":31,"cc":238,"cs":75,"ou":234,"oc":486,"ob":36,"al":199},{"y":2020,"m":7,"d":"2020-07-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":132,"us":29,"cc":224,"cs":71,"ou":216,"oc":459,"ob":33,"al":185},{"y":2020,"m":7,"d":"2020-07-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":114,"us":25,"cc":198,"cs":63,"ou":189,"oc":414,"ob":29,"al":162},{"y":2020,"m":7,"d":"2020-07-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":109,"us":24,"cc":182,"cs":58,"ou":176,"oc":369,"ob":27,"al":151},{"y":2020,"m":7,"d":"2020-07-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":100,"us":22,"cc":168,"cs":53,"ou":167,"oc":351,"ob":25,"al":139},{"y":2020,"m":7,"d":"2020-07-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":85,"us":19,"cc":144,"cs":46,"ou":153,"oc":324,"ob":21,"al":119},{"y":2020,"m":7,"d":"2020-07-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":88,"us":19,"cc":147,"cs":47,"ou":149,"oc":315,"ob":22,"al":122},{"y":2020,"m":7,"d":"2020-07-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":89,"us":19,"cc":156,"cs":49,"ou":126,"oc":279,"ob":22,"al":127},{"y":2020,"m":7,"d":"2020-07-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":75,"us":17,"cc":128,"cs":41,"ou":140,"oc":297,"ob":19,"al":106},{"y":2020,"m":7,"d":"2020-07-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":75,"us":17,"cc":128,"cs":41,"ou":135,"oc":288,"ob":19,"al":106},{"y":2020,"m":7,"d":"2020-07-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":76,"us":17,"cc":125,"cs":39,"ou":131,"oc":270,"ob":19,"al":105},{"y":2020,"m":8,"d":"2020-08-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":212,"us":46,"cc":353,"cs":111,"ou":378,"oc":792,"ob":53,"al":294},{"y":2020,"m":8,"d":"2020-08-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":130,"us":28,"cc":215,"cs":68,"ou":234,"oc":486,"ob":33,"al":179},{"y":2020,"m":8,"d":"2020-08-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":119,"us":26,"cc":202,"cs":64,"ou":216,"oc":459,"ob":30,"al":167},{"y":2020,"m":8,"d":"2020-08-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":102,"us":22,"cc":177,"cs":56,"ou":189,"oc":414,"ob":26,"al":145},{"y":2020,"m":8,"d":"2020-08-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":96,"us":21,"cc":160,"cs":51,"ou":176,"oc":369,"ob":24,"al":133},{"y":2020,"m":8,"d":"2020-08-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":87,"us":19,"cc":146,"cs":46,"ou":167,"oc":351,"ob":22,"al":121},{"y":2020,"m":8,"d":"2020-08-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":74,"us":16,"cc":125,"cs":39,"ou":153,"oc":324,"ob":19,"al":103},{"y":2020,"m":8,"d":"2020-08-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":76,"us":17,"cc":128,"cs":41,"ou":149,"oc":315,"ob":19,"al":106},{"y":2020,"m":8,"d":"2020-08-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":78,"us":17,"cc":138,"cs":43,"ou":126,"oc":279,"ob":20,"al":112},{"y":2020,"m":8,"d":"2020-08-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":68,"us":15,"cc":115,"cs":36,"ou":140,"oc":297,"ob":17,"al":95},{"y":2020,"m":8,"d":"2020-08-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":68,"us":15,"cc":116,"cs":36,"ou":135,"oc":288,"ob":17,"al":96},{"y":2020,"m":8,"d":"2020-08-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":68,"us":15,"cc":112,"cs":36,"ou":131,"oc":270,"ob":17,"al":94},{"y":2020,"m":9,"d":"2020-09-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":185,"us":40,"cc":308,"cs":97,"ou":378,"oc":792,"ob":46,"al":256},{"y":2020,"m":9,"d":"2020-09-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":113,"us":25,"cc":187,"cs":59,"ou":234,"oc":486,"ob":28,"al":156},{"y":2020,"m":9,"d":"2020-09-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":103,"us":22,"cc":174,"cs":55,"ou":216,"oc":459,"ob":26,"al":144},{"y":2020,"m":9,"d":"2020-09-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":87,"us":19,"cc":151,"cs":48,"ou":189,"oc":414,"ob":22,"al":124},{"y":2020,"m":9,"d":"2020-09-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":81,"us":18,"cc":135,"cs":43,"ou":176,"oc":369,"ob":20,"al":112},{"y":2020,"m":9,"d":"2020-09-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":73,"us":16,"cc":122,"cs":39,"ou":167,"oc":351,"ob":18,"al":101},{"y":2020,"m":9,"d":"2020-09-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":62,"us":14,"cc":105,"cs":33,"ou":153,"oc":324,"ob":16,"al":87},{"y":2020,"m":9,"d":"2020-09-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":65,"us":14,"cc":109,"cs":35,"ou":149,"oc":315,"ob":16,"al":90},{"y":2020,"m":9,"d":"2020-09-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":67,"us":15,"cc":119,"cs":37,"ou":126,"oc":279,"ob":17,"al":97},{"y":2020,"m":9,"d":"2020-09-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":59,"us":13,"cc":100,"cs":32,"ou":140,"oc":297,"ob":15,"al":83},{"y":2020,"m":9,"d":"2020-09-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":59,"us":13,"cc":101,"cs":32,"ou":135,"oc":288,"ob":15,"al":83},{"y":2020,"m":9,"d":"2020-09-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":59,"us":13,"cc":97,"cs":30,"ou":131,"oc":270,"ob":15,"al":81},{"y":2020,"m":10,"d":"2020-10-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":172,"us":38,"cc":287,"cs":91,"ou":378,"oc":792,"ob":43,"al":239},{"y":2020,"m":10,"d":"2020-10-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":105,"us":23,"cc":173,"cs":55,"ou":234,"oc":486,"ob":26,"al":145},{"y":2020,"m":10,"d":"2020-10-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":93,"us":21,"cc":159,"cs":50,"ou":216,"oc":459,"ob":23,"al":131},{"y":2020,"m":10,"d":"2020-10-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":78,"us":17,"cc":136,"cs":43,"ou":189,"oc":414,"ob":20,"al":111},{"y":2020,"m":10,"d":"2020-10-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":72,"us":16,"cc":121,"cs":38,"ou":176,"oc":369,"ob":18,"al":100},{"y":2020,"m":10,"d":"2020-10-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":66,"us":14,"cc":110,"cs":35,"ou":167,"oc":351,"ob":17,"al":92},{"y":2020,"m":10,"d":"2020-10-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":57,"us":12,"cc":96,"cs":30,"ou":153,"oc":324,"ob":14,"al":80},{"y":2020,"m":10,"d":"2020-10-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":60,"us":13,"cc":102,"cs":32,"ou":149,"oc":315,"ob":15,"al":84},{"y":2020,"m":10,"d":"2020-10-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":62,"us":14,"cc":111,"cs":35,"ou":126,"oc":279,"ob":16,"al":90},{"y":2020,"m":10,"d":"2020-10-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":55,"us":12,"cc":93,"cs":30,"ou":140,"oc":297,"ob":14,"al":77},{"y":2020,"m":10,"d":"2020-10-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":55,"us":12,"cc":93,"cs":30,"ou":135,"oc":288,"ob":14,"al":77},{"y":2020,"m":10,"d":"2020-10-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":54,"us":12,"cc":88,"cs":28,"ou":131,"oc":270,"ob":14,"al":74},{"y":2020,"m":11,"d":"2020-11-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":206,"us":45,"cc":344,"cs":109,"ou":378,"oc":792,"ob":52,"al":286},{"y":2020,"m":11,"d":"2020-11-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":124,"us":27,"cc":204,"cs":65,"ou":234,"oc":486,"ob":31,"al":171},{"y":2020,"m":11,"d":"2020-11-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":109,"us":24,"cc":185,"cs":59,"ou":216,"oc":459,"ob":27,"al":153},{"y":2020,"m":11,"d":"2020-11-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":90,"us":20,"cc":158,"cs":50,"ou":189,"oc":414,"ob":23,"al":129},{"y":2020,"m":11,"d":"2020-11-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":84,"us":19,"cc":141,"cs":45,"ou":176,"oc":369,"ob":21,"al":117},{"y":2020,"m":11,"d":"2020-11-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":78,"us":17,"cc":131,"cs":41,"ou":167,"oc":351,"ob":20,"al":109},{"y":2020,"m":11,"d":"2020-11-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":68,"us":15,"cc":115,"cs":36,"ou":153,"oc":324,"ob":17,"al":95},{"y":2020,"m":11,"d":"2020-11-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":73,"us":16,"cc":122,"cs":39,"ou":149,"oc":315,"ob":18,"al":101},{"y":2020,"m":11,"d":"2020-11-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":75,"us":17,"cc":134,"cs":42,"ou":126,"oc":279,"ob":19,"al":109},{"y":2020,"m":11,"d":"2020-11-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":66,"us":15,"cc":112,"cs":35,"ou":140,"oc":297,"ob":17,"al":93},{"y":2020,"m":11,"d":"2020-11-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":65,"us":14,"cc":110,"cs":35,"ou":135,"oc":288,"ob":16,"al":91},{"y":2020,"m":11,"d":"2020-11-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":63,"us":14,"cc":103,"cs":33,"ou":131,"oc":270,"ob":16,"al":86},{"y":2020,"m":12,"d":"2020-12-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":237,"us":52,"cc":397,"cs":125,"ou":378,"oc":792,"ob":59,"al":330},{"y":2020,"m":12,"d":"2020-12-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":140,"us":31,"cc":233,"cs":73,"ou":234,"oc":486,"ob":35,"al":194},{"y":2020,"m":12,"d":"2020-12-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":124,"us":27,"cc":211,"cs":66,"ou":216,"oc":459,"ob":31,"al":174},{"y":2020,"m":12,"d":"2020-12-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":103,"us":22,"cc":179,"cs":57,"ou":189,"oc":414,"ob":26,"al":147},{"y":2020,"m":12,"d":"2020-12-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":98,"us":21,"cc":163,"cs":51,"ou":176,"oc":369,"ob":25,"al":136},{"y":2020,"m":12,"d":"2020-12-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":91,"us":20,"cc":153,"cs":48,"ou":167,"oc":351,"ob":23,"al":127},{"y":2020,"m":12,"d":"2020-12-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":80,"us":18,"cc":135,"cs":43,"ou":153,"oc":324,"ob":20,"al":112},{"y":2020,"m":12,"d":"2020-12-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":86,"us":19,"cc":144,"cs":46,"ou":149,"oc":315,"ob":22,"al":120},{"y":2020,"m":12,"d":"2020-12-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":89,"us":19,"cc":156,"cs":49,"ou":126,"oc":279,"ob":22,"al":127},{"y":2020,"m":12,"d":"2020-12-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":76,"us":17,"cc":128,"cs":41,"ou":140,"oc":297,"ob":19,"al":106},{"y":2020,"m":12,"d":"2020-12-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":74,"us":16,"cc":125,"cs":40,"ou":135,"oc":288,"ob":19,"al":103},{"y":2020,"m":12,"d":"2020-12-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":71,"us":16,"cc":117,"cs":37,"ou":131,"oc":270,"ob":18,"al":98},{"y":2021,"m":1,"d":"2021-01-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":321,"us":71,"cc":537,"cs":170,"ou":483,"oc":1012,"ob":90,"al":446},{"y":2021,"m":1,"d":"2021-01-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":195,"us":43,"cc":324,"cs":102,"ou":299,"oc":621,"ob":55,"al":270},{"y":2021,"m":1,"d":"2021-01-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":175,"us":39,"cc":297,"cs":94,"ou":276,"oc":587,"ob":49,"al":245},{"y":2021,"m":1,"d":"2021-01-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":145,"us":32,"cc":255,"cs":80,"ou":241,"oc":529,"ob":41,"al":208},{"y":2021,"m":1,"d":"2021-01-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":135,"us":30,"cc":226,"cs":72,"ou":224,"oc":471,"ob":38,"al":188},{"y":2021,"m":1,"d":"2021-01-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":123,"us":27,"cc":207,"cs":65,"ou":213,"oc":448,"ob":34,"al":172},{"y":2021,"m":1,"d":"2021-01-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":106,"us":23,"cc":179,"cs":57,"ou":195,"oc":414,"ob":30,"al":148},{"y":2021,"m":1,"d":"2021-01-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":112,"us":25,"cc":189,"cs":60,"ou":190,"oc":402,"ob":31,"al":157},{"y":2021,"m":1,"d":"2021-01-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":117,"us":26,"cc":207,"cs":66,"ou":161,"oc":357,"ob":33,"al":168},{"y":2021,"m":1,"d":"2021-01-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":103,"us":22,"cc":175,"cs":55,"ou":178,"oc":379,"ob":29,"al":145},{"y":2021,"m":1,"d":"2021-01-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":103,"us":22,"cc":174,"cs":55,"ou":173,"oc":368,"ob":29,"al":144},{"y":2021,"m":1,"d":"2021-01-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":100,"us":22,"cc":165,"cs":52,"ou":167,"oc":345,"ob":28,"al":138},{"y":2021,"m":2,"d":"2021-02-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":362,"us":80,"cc":605,"cs":191,"ou":483,"oc":1012,"ob":101,"al":503},{"y":2021,"m":2,"d":"2021-02-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":217,"us":48,"cc":359,"cs":114,"ou":299,"oc":621,"ob":61,"al":300},{"y":2021,"m":2,"d":"2021-02-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":193,"us":42,"cc":326,"cs":103,"ou":276,"oc":587,"ob":54,"al":270},{"y":2021,"m":2,"d":"2021-02-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":158,"us":35,"cc":277,"cs":88,"ou":241,"oc":529,"ob":44,"al":226},{"y":2021,"m":2,"d":"2021-02-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":148,"us":32,"cc":248,"cs":78,"ou":224,"oc":471,"ob":41,"al":206},{"y":2021,"m":2,"d":"2021-02-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":137,"us":30,"cc":230,"cs":72,"ou":213,"oc":448,"ob":38,"al":191},{"y":2021,"m":2,"d":"2021-02-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":119,"us":26,"cc":201,"cs":64,"ou":195,"oc":414,"ob":33,"al":166},{"y":2021,"m":2,"d":"2021-02-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":128,"us":28,"cc":215,"cs":68,"ou":190,"oc":402,"ob":36,"al":178},{"y":2021,"m":2,"d":"2021-02-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":130,"us":29,"cc":231,"cs":73,"ou":161,"oc":357,"ob":36,"al":188},{"y":2021,"m":2,"d":"2021-02-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":116,"us":25,"cc":196,"cs":62,"ou":178,"oc":379,"ob":32,"al":162},{"y":2021,"m":2,"d":"2021-02-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":114,"us":25,"cc":193,"cs":61,"ou":173,"oc":368,"ob":32,"al":160},{"y":2021,"m":2,"d":"2021-02-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":110,"us":24,"cc":181,"cs":57,"ou":167,"oc":345,"ob":31,"al":151},{"y":2021,"m":3,"d":"2021-03-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":392,"us":86,"cc":655,"cs":207,"ou":483,"oc":1012,"ob":110,"al":544},{"y":2021,"m":3,"d":"2021-03-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":235,"us":52,"cc":390,"cs":123,"ou":299,"oc":621,"ob":66,"al":325},{"y":2021,"m":3,"d":"2021-03-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":208,"us":46,"cc":353,"cs":111,"ou":276,"oc":587,"ob":58,"al":292},{"y":2021,"m":3,"d":"2021-03-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":172,"us":38,"cc":301,"cs":95,"ou":241,"oc":529,"ob":48,"al":246},{"y":2021,"m":3,"d":"2021-03-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":162,"us":36,"cc":272,"cs":86,"ou":224,"oc":471,"ob":45,"al":226},{"y":2021,"m":3,"d":"2021-03-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":153,"us":33,"cc":255,"cs":81,"ou":213,"oc":448,"ob":43,"al":212},{"y":2021,"m":3,"d":"2021-03-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":134,"us":30,"cc":227,"cs":72,"ou":195,"oc":414,"ob":38,"al":188},{"y":2021,"m":3,"d":"2021-03-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":144,"us":31,"cc":242,"cs":76,"ou":190,"oc":402,"ob":40,"al":201},{"y":2021,"m":3,"d":"2021-03-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":130,"us":29,"cc":231,"cs":73,"ou":161,"oc":357,"ob":36,"al":188},{"y":2021,"m":3,"d":"2021-03-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":127,"us":28,"cc":216,"cs":68,"ou":178,"oc":379,"ob":36,"al":178},{"y":2021,"m":3,"d":"2021-03-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":124,"us":27,"cc":210,"cs":66,"ou":173,"oc":368,"ob":35,"al":174},{"y":2021,"m":3,"d":"2021-03-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":119,"us":26,"cc":196,"cs":62,"ou":167,"oc":345,"ob":33,"al":164},{"y":2021,"m":4,"d":"2021-04-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":383,"us":84,"cc":640,"cs":202,"ou":483,"oc":1012,"ob":107,"al":532},{"y":2021,"m":4,"d":"2021-04-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":226,"us":49,"cc":374,"cs":118,"ou":299,"oc":621,"ob":63,"al":312},{"y":2021,"m":4,"d":"2021-04-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":201,"us":44,"cc":340,"cs":107,"ou":276,"oc":587,"ob":56,"al":281},{"y":2021,"m":4,"d":"2021-04-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":168,"us":37,"cc":293,"cs":93,"ou":241,"oc":529,"ob":47,"al":240},{"y":2021,"m":4,"d":"2021-04-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":161,"us":35,"cc":270,"cs":85,"ou":224,"oc":471,"ob":45,"al":224},{"y":2021,"m":4,"d":"2021-04-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":152,"us":33,"cc":255,"cs":80,"ou":213,"oc":448,"ob":43,"al":212},{"y":2021,"m":4,"d":"2021-04-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":134,"us":29,"cc":226,"cs":72,"ou":195,"oc":414,"ob":38,"al":187},{"y":2021,"m":4,"d":"2021-04-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":142,"us":31,"cc":239,"cs":75,"ou":190,"oc":402,"ob":40,"al":198},{"y":2021,"m":4,"d":"2021-04-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":130,"us":29,"cc":231,"cs":73,"ou":161,"oc":357,"ob":36,"al":188},{"y":2021,"m":4,"d":"2021-04-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":122,"us":27,"cc":207,"cs":66,"ou":178,"oc":379,"ob":34,"al":171},{"y":2021,"m":4,"d":"2021-04-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":119,"us":26,"cc":201,"cs":64,"ou":173,"oc":368,"ob":33,"al":166},{"y":2021,"m":4,"d":"2021-04-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":115,"us":25,"cc":189,"cs":60,"ou":167,"oc":345,"ob":32,"al":158},{"y":2021,"m":5,"d":"2021-05-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":352,"us":77,"cc":587,"cs":185,"ou":483,"oc":1012,"ob":99,"al":488},{"y":2021,"m":5,"d":"2021-05-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":208,"us":46,"cc":345,"cs":109,"ou":299,"oc":621,"ob":58,"al":288},{"y":2021,"m":5,"d":"2021-05-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":187,"us":41,"cc":318,"cs":100,"ou":276,"oc":587,"ob":52,"al":263},{"y":2021,"m":5,"d":"2021-05-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":159,"us":35,"cc":278,"cs":88,"ou":241,"oc":529,"ob":45,"al":227},{"y":2021,"m":5,"d":"2021-05-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":153,"us":34,"cc":258,"cs":81,"ou":224,"oc":471,"ob":43,"al":214},{"y":2021,"m":5,"d":"2021-05-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":145,"us":32,"cc":243,"cs":77,"ou":213,"oc":448,"ob":41,"al":202},{"y":2021,"m":5,"d":"2021-05-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":127,"us":28,"cc":214,"cs":68,"ou":195,"oc":414,"ob":36,"al":177},{"y":2021,"m":5,"d":"2021-05-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":132,"us":29,"cc":223,"cs":70,"ou":190,"oc":402,"ob":37,"al":185},{"y":2021,"m":5,"d":"2021-05-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":130,"us":29,"cc":231,"cs":73,"ou":161,"oc":357,"ob":36,"al":188},{"y":2021,"m":5,"d":"2021-05-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":112,"us":25,"cc":191,"cs":60,"ou":178,"oc":379,"ob":31,"al":158},{"y":2021,"m":5,"d":"2021-05-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":109,"us":24,"cc":185,"cs":59,"ou":173,"oc":368,"ob":31,"al":153},{"y":2021,"m":5,"d":"2021-05-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":107,"us":24,"cc":176,"cs":56,"ou":167,"oc":345,"ob":30,"al":147},{"y":2021,"m":6,"d":"2021-06-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":326,"us":72,"cc":545,"cs":172,"ou":483,"oc":1012,"ob":91,"al":453},{"y":2021,"m":6,"d":"2021-06-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":196,"us":43,"cc":325,"cs":102,"ou":299,"oc":621,"ob":55,"al":271},{"y":2021,"m":6,"d":"2021-06-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":179,"us":39,"cc":302,"cs":96,"ou":276,"oc":587,"ob":50,"al":250},{"y":2021,"m":6,"d":"2021-06-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":153,"us":34,"cc":268,"cs":84,"ou":241,"oc":529,"ob":43,"al":219},{"y":2021,"m":6,"d":"2021-06-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":148,"us":32,"cc":248,"cs":78,"ou":224,"oc":471,"ob":41,"al":206},{"y":2021,"m":6,"d":"2021-06-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":138,"us":30,"cc":232,"cs":73,"ou":213,"oc":448,"ob":39,"al":192},{"y":2021,"m":6,"d":"2021-06-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":119,"us":26,"cc":201,"cs":64,"ou":195,"oc":414,"ob":33,"al":166},{"y":2021,"m":6,"d":"2021-06-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":123,"us":27,"cc":207,"cs":66,"ou":190,"oc":402,"ob":34,"al":172},{"y":2021,"m":6,"d":"2021-06-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":123,"us":27,"cc":218,"cs":69,"ou":161,"oc":357,"ob":34,"al":177},{"y":2021,"m":6,"d":"2021-06-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":104,"us":23,"cc":177,"cs":56,"ou":178,"oc":379,"ob":29,"al":146},{"y":2021,"m":6,"d":"2021-06-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":103,"us":23,"cc":175,"cs":55,"ou":173,"oc":368,"ob":29,"al":145},{"y":2021,"m":6,"d":"2021-06-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":103,"us":22,"cc":168,"cs":53,"ou":167,"oc":345,"ob":29,"al":141},{"y":2021,"m":7,"d":"2021-07-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":275,"us":60,"cc":459,"cs":145,"ou":483,"oc":1012,"ob":77,"al":382},{"y":2021,"m":7,"d":"2021-07-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":167,"us":37,"cc":277,"cs":88,"ou":299,"oc":621,"ob":47,"al":231},{"y":2021,"m":7,"d":"2021-07-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":154,"us":34,"cc":261,"cs":82,"ou":276,"oc":587,"ob":43,"al":216},{"y":2021,"m":7,"d":"2021-07-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":132,"us":29,"cc":231,"cs":73,"ou":241,"oc":529,"ob":37,"al":189},{"y":2021,"m":7,"d":"2021-07-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":126,"us":28,"cc":211,"cs":67,"ou":224,"oc":471,"ob":35,"al":175},{"y":2021,"m":7,"d":"2021-07-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":116,"us":26,"cc":195,"cs":62,"ou":213,"oc":448,"ob":32,"al":162},{"y":2021,"m":7,"d":"2021-07-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":99,"us":22,"cc":168,"cs":53,"ou":195,"oc":414,"ob":28,"al":139},{"y":2021,"m":7,"d":"2021-07-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":102,"us":22,"cc":172,"cs":54,"ou":190,"oc":402,"ob":29,"al":142},{"y":2021,"m":7,"d":"2021-07-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":103,"us":22,"cc":182,"cs":57,"ou":161,"oc":357,"ob":29,"al":148},{"y":2021,"m":7,"d":"2021-07-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":88,"us":19,"cc":149,"cs":47,"ou":178,"oc":379,"ob":25,"al":123},{"y":2021,"m":7,"d":"2021-07-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":88,"us":19,"cc":149,"cs":47,"ou":173,"oc":368,"ob":25,"al":123},{"y":2021,"m":7,"d":"2021-07-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":88,"us":19,"cc":145,"cs":46,"ou":167,"oc":345,"ob":25,"al":121},{"y":2021,"m":8,"d":"2021-08-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":219,"us":48,"cc":366,"cs":116,"ou":483,"oc":1012,"ob":61,"al":304},{"y":2021,"m":8,"d":"2021-08-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":134,"us":30,"cc":223,"cs":70,"ou":299,"oc":621,"ob":38,"al":186},{"y":2021,"m":8,"d":"2021-08-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":124,"us":27,"cc":210,"cs":66,"ou":276,"oc":587,"ob":35,"al":174},{"y":2021,"m":8,"d":"2021-08-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":105,"us":23,"cc":184,"cs":58,"ou":241,"oc":529,"ob":29,"al":150},{"y":2021,"m":8,"d":"2021-08-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":99,"us":22,"cc":166,"cs":53,"ou":224,"oc":471,"ob":28,"al":138},{"y":2021,"m":8,"d":"2021-08-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":90,"us":20,"cc":151,"cs":48,"ou":213,"oc":448,"ob":25,"al":125},{"y":2021,"m":8,"d":"2021-08-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":76,"us":17,"cc":129,"cs":41,"ou":195,"oc":414,"ob":21,"al":107},{"y":2021,"m":8,"d":"2021-08-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":79,"us":17,"cc":133,"cs":42,"ou":190,"oc":402,"ob":22,"al":110},{"y":2021,"m":8,"d":"2021-08-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":80,"us":18,"cc":143,"cs":45,"ou":161,"oc":357,"ob":22,"al":116},{"y":2021,"m":8,"d":"2021-08-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":70,"us":15,"cc":119,"cs":37,"ou":178,"oc":379,"ob":20,"al":98},{"y":2021,"m":8,"d":"2021-08-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":71,"us":15,"cc":120,"cs":38,"ou":173,"oc":368,"ob":20,"al":99},{"y":2021,"m":8,"d":"2021-08-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":71,"us":15,"cc":116,"cs":37,"ou":167,"oc":345,"ob":20,"al":97},{"y":2021,"m":9,"d":"2021-09-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":180,"us":39,"cc":300,"cs":95,"ou":483,"oc":1012,"ob":50,"al":250},{"y":2021,"m":9,"d":"2021-09-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":110,"us":24,"cc":182,"cs":58,"ou":299,"oc":621,"ob":31,"al":152},{"y":2021,"m":9,"d":"2021-09-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":100,"us":22,"cc":170,"cs":54,"ou":276,"oc":587,"ob":28,"al":140},{"y":2021,"m":9,"d":"2021-09-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":84,"us":19,"cc":147,"cs":47,"ou":241,"oc":529,"ob":24,"al":120},{"y":2021,"m":9,"d":"2021-09-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":79,"us":17,"cc":131,"cs":42,"ou":224,"oc":471,"ob":22,"al":109},{"y":2021,"m":9,"d":"2021-09-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":71,"us":16,"cc":119,"cs":38,"ou":213,"oc":448,"ob":20,"al":99},{"y":2021,"m":9,"d":"2021-09-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":61,"us":13,"cc":103,"cs":32,"ou":195,"oc":414,"ob":17,"al":85},{"y":2021,"m":9,"d":"2021-09-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":63,"us":14,"cc":106,"cs":34,"ou":190,"oc":402,"ob":18,"al":88},{"y":2021,"m":9,"d":"2021-09-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":66,"us":14,"cc":116,"cs":36,"ou":161,"oc":357,"ob":18,"al":95},{"y":2021,"m":9,"d":"2021-09-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":57,"us":13,"cc":97,"cs":31,"ou":178,"oc":379,"ob":16,"al":80},{"y":2021,"m":9,"d":"2021-09-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":58,"us":13,"cc":98,"cs":31,"ou":173,"oc":368,"ob":16,"al":81},{"y":2021,"m":9,"d":"2021-09-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":57,"us":13,"cc":94,"cs":30,"ou":167,"oc":345,"ob":16,"al":79},{"y":2021,"m":10,"d":"2021-10-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":155,"us":34,"cc":258,"cs":82,"ou":483,"oc":1012,"ob":43,"al":215},{"y":2021,"m":10,"d":"2021-10-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":94,"us":21,"cc":156,"cs":49,"ou":299,"oc":621,"ob":26,"al":130},{"y":2021,"m":10,"d":"2021-10-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":84,"us":19,"cc":143,"cs":45,"ou":276,"oc":587,"ob":24,"al":118},{"y":2021,"m":10,"d":"2021-10-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":70,"us":15,"cc":122,"cs":39,"ou":241,"oc":529,"ob":20,"al":100},{"y":2021,"m":10,"d":"2021-10-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":65,"us":14,"cc":109,"cs":34,"ou":224,"oc":471,"ob":18,"al":90},{"y":2021,"m":10,"d":"2021-10-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":59,"us":13,"cc":100,"cs":31,"ou":213,"oc":448,"ob":17,"al":83},{"y":2021,"m":10,"d":"2021-10-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":51,"us":11,"cc":86,"cs":27,"ou":195,"oc":414,"ob":14,"al":71},{"y":2021,"m":10,"d":"2021-10-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":54,"us":12,"cc":91,"cs":29,"ou":190,"oc":402,"ob":15,"al":75},{"y":2021,"m":10,"d":"2021-10-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":57,"us":12,"cc":100,"cs":31,"ou":161,"oc":357,"ob":16,"al":82},{"y":2021,"m":10,"d":"2021-10-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":49,"us":11,"cc":84,"cs":26,"ou":178,"oc":379,"ob":14,"al":69},{"y":2021,"m":10,"d":"2021-10-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":49,"us":11,"cc":84,"cs":26,"ou":173,"oc":368,"ob":14,"al":69},{"y":2021,"m":10,"d":"2021-10-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":48,"us":11,"cc":80,"cs":25,"ou":167,"oc":345,"ob":13,"al":67},{"y":2021,"m":11,"d":"2021-11-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":132,"us":29,"cc":220,"cs":69,"ou":483,"oc":1012,"ob":37,"al":183},{"y":2021,"m":11,"d":"2021-11-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":79,"us":17,"cc":131,"cs":41,"ou":299,"oc":621,"ob":22,"al":109},{"y":2021,"m":11,"d":"2021-11-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":70,"us":15,"cc":119,"cs":37,"ou":276,"oc":587,"ob":20,"al":98},{"y":2021,"m":11,"d":"2021-11-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":57,"us":13,"cc":101,"cs":32,"ou":241,"oc":529,"ob":16,"al":82},{"y":2021,"m":11,"d":"2021-11-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":54,"us":12,"cc":90,"cs":29,"ou":224,"oc":471,"ob":15,"al":75},{"y":2021,"m":11,"d":"2021-11-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":50,"us":11,"cc":84,"cs":26,"ou":213,"oc":448,"ob":14,"al":70},{"y":2021,"m":11,"d":"2021-11-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":43,"us":10,"cc":74,"cs":23,"ou":195,"oc":414,"ob":12,"al":61},{"y":2021,"m":11,"d":"2021-11-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":47,"us":10,"cc":78,"cs":25,"ou":190,"oc":402,"ob":13,"al":65},{"y":2021,"m":11,"d":"2021-11-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":48,"us":11,"cc":85,"cs":27,"ou":161,"oc":357,"ob":13,"al":69},{"y":2021,"m":11,"d":"2021-11-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":42,"us":9,"cc":71,"cs":23,"ou":178,"oc":379,"ob":12,"al":59},{"y":2021,"m":11,"d":"2021-11-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":42,"us":9,"cc":70,"cs":22,"ou":173,"oc":368,"ob":12,"al":58},{"y":2021,"m":11,"d":"2021-11-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":40,"us":9,"cc":66,"cs":21,"ou":167,"oc":345,"ob":11,"al":55},{"y":2021,"m":12,"d":"2021-12-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":148,"us":32,"cc":246,"cs":78,"ou":483,"oc":1012,"ob":41,"al":205},{"y":2021,"m":12,"d":"2021-12-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":87,"us":19,"cc":144,"cs":46,"ou":299,"oc":621,"ob":24,"al":120},{"y":2021,"m":12,"d":"2021-12-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":77,"us":17,"cc":131,"cs":41,"ou":276,"oc":587,"ob":22,"al":108},{"y":2021,"m":12,"d":"2021-12-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":64,"us":14,"cc":112,"cs":35,"ou":241,"oc":529,"ob":18,"al":92},{"y":2021,"m":12,"d":"2021-12-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":61,"us":13,"cc":101,"cs":32,"ou":224,"oc":471,"ob":17,"al":84},{"y":2021,"m":12,"d":"2021-12-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":57,"us":12,"cc":95,"cs":30,"ou":213,"oc":448,"ob":16,"al":79},{"y":2021,"m":12,"d":"2021-12-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":50,"us":11,"cc":84,"cs":27,"ou":195,"oc":414,"ob":14,"al":70},{"y":2021,"m":12,"d":"2021-12-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":53,"us":12,"cc":90,"cs":28,"ou":190,"oc":402,"ob":15,"al":74},{"y":2021,"m":12,"d":"2021-12-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":55,"us":12,"cc":97,"cs":31,"ou":161,"oc":357,"ob":15,"al":79},{"y":2021,"m":12,"d":"2021-12-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":47,"us":10,"cc":80,"cs":25,"ou":178,"oc":379,"ob":13,"al":66},{"y":2021,"m":12,"d":"2021-12-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":46,"us":10,"cc":78,"cs":24,"ou":173,"oc":368,"ob":13,"al":64},{"y":2021,"m":12,"d":"2021-12-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":44,"us":10,"cc":73,"cs":23,"ou":167,"oc":345,"ob":12,"al":61},{"y":2022,"m":1,"d":"2022-01-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":209,"us":46,"cc":350,"cs":110,"ou":344,"oc":722,"ob":25,"al":380},{"y":2022,"m":1,"d":"2022-01-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":127,"us":28,"cc":211,"cs":66,"ou":213,"oc":443,"ob":15,"al":230},{"y":2022,"m":1,"d":"2022-01-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":114,"us":25,"cc":193,"cs":61,"ou":197,"oc":418,"ob":14,"al":209},{"y":2022,"m":1,"d":"2022-01-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":94,"us":21,"cc":165,"cs":52,"ou":172,"oc":377,"ob":11,"al":176},{"y":2022,"m":1,"d":"2022-01-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":88,"us":19,"cc":147,"cs":47,"ou":160,"oc":336,"ob":11,"al":160},{"y":2022,"m":1,"d":"2022-01-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":80,"us":18,"cc":135,"cs":42,"ou":152,"oc":320,"ob":10,"al":146},{"y":2022,"m":1,"d":"2022-01-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":69,"us":15,"cc":116,"cs":37,"ou":139,"oc":295,"ob":8,"al":126},{"y":2022,"m":1,"d":"2022-01-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":73,"us":16,"cc":123,"cs":39,"ou":135,"oc":287,"ob":9,"al":133},{"y":2022,"m":1,"d":"2022-01-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":76,"us":17,"cc":135,"cs":42,"ou":115,"oc":254,"ob":9,"al":143},{"y":2022,"m":1,"d":"2022-01-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":67,"us":15,"cc":114,"cs":36,"ou":127,"oc":271,"ob":8,"al":123},{"y":2022,"m":1,"d":"2022-01-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":66,"us":15,"cc":113,"cs":36,"ou":123,"oc":262,"ob":8,"al":122},{"y":2022,"m":1,"d":"2022-01-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":65,"us":14,"cc":107,"cs":34,"ou":119,"oc":246,"ob":8,"al":117},{"y":2022,"m":2,"d":"2022-02-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":199,"us":44,"cc":334,"cs":105,"ou":344,"oc":722,"ob":24,"al":362},{"y":2022,"m":2,"d":"2022-02-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":120,"us":26,"cc":198,"cs":62,"ou":213,"oc":443,"ob":14,"al":216},{"y":2022,"m":2,"d":"2022-02-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":106,"us":23,"cc":179,"cs":57,"ou":197,"oc":418,"ob":13,"al":194},{"y":2022,"m":2,"d":"2022-02-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":88,"us":19,"cc":153,"cs":48,"ou":172,"oc":377,"ob":11,"al":164},{"y":2022,"m":2,"d":"2022-02-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":82,"us":18,"cc":137,"cs":43,"ou":160,"oc":336,"ob":10,"al":149},{"y":2022,"m":2,"d":"2022-02-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":75,"us":17,"cc":126,"cs":40,"ou":152,"oc":320,"ob":9,"al":137},{"y":2022,"m":2,"d":"2022-02-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":66,"us":14,"cc":111,"cs":35,"ou":139,"oc":295,"ob":8,"al":120},{"y":2022,"m":2,"d":"2022-02-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":70,"us":15,"cc":119,"cs":37,"ou":135,"oc":287,"ob":8,"al":129},{"y":2022,"m":2,"d":"2022-02-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":73,"us":16,"cc":129,"cs":41,"ou":115,"oc":254,"ob":9,"al":137},{"y":2022,"m":2,"d":"2022-02-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":64,"us":14,"cc":109,"cs":34,"ou":127,"oc":271,"ob":8,"al":118},{"y":2022,"m":2,"d":"2022-02-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":62,"us":14,"cc":106,"cs":34,"ou":123,"oc":262,"ob":7,"al":114},{"y":2022,"m":2,"d":"2022-02-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":61,"us":13,"cc":100,"cs":31,"ou":119,"oc":246,"ob":7,"al":109},{"y":2022,"m":3,"d":"2022-03-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":129,"us":28,"cc":215,"cs":68,"ou":344,"oc":722,"ob":15,"al":234},{"y":2022,"m":3,"d":"2022-03-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":76,"us":17,"cc":126,"cs":40,"ou":213,"oc":443,"ob":9,"al":137},{"y":2022,"m":3,"d":"2022-03-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":67,"us":15,"cc":114,"cs":36,"ou":197,"oc":418,"ob":8,"al":123},{"y":2022,"m":3,"d":"2022-03-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":56,"us":12,"cc":97,"cs":31,"ou":172,"oc":377,"ob":7,"al":104},{"y":2022,"m":3,"d":"2022-03-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":52,"us":12,"cc":88,"cs":28,"ou":160,"oc":336,"ob":6,"al":95},{"y":2022,"m":3,"d":"2022-03-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":49,"us":11,"cc":83,"cs":26,"ou":152,"oc":320,"ob":6,"al":90},{"y":2022,"m":3,"d":"2022-03-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":43,"us":10,"cc":73,"cs":23,"ou":139,"oc":295,"ob":5,"al":79},{"y":2022,"m":3,"d":"2022-03-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":46,"us":10,"cc":78,"cs":25,"ou":135,"oc":287,"ob":6,"al":84},{"y":2022,"m":3,"d":"2022-03-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":48,"us":10,"cc":84,"cs":27,"ou":115,"oc":254,"ob":6,"al":90},{"y":2022,"m":3,"d":"2022-03-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":41,"us":9,"cc":70,"cs":22,"ou":127,"oc":271,"ob":5,"al":75},{"y":2022,"m":3,"d":"2022-03-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":40,"us":9,"cc":68,"cs":21,"ou":123,"oc":262,"ob":5,"al":73},{"y":2022,"m":3,"d":"2022-03-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":39,"us":8,"cc":63,"cs":20,"ou":119,"oc":246,"ob":5,"al":69},{"y":2022,"m":4,"d":"2022-04-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":80,"us":18,"cc":135,"cs":42,"ou":344,"oc":722,"ob":10,"al":146},{"y":2022,"m":4,"d":"2022-04-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":48,"us":10,"cc":78,"cs":25,"ou":213,"oc":443,"ob":6,"al":86},{"y":2022,"m":4,"d":"2022-04-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":42,"us":9,"cc":71,"cs":23,"ou":197,"oc":418,"ob":5,"al":77},{"y":2022,"m":4,"d":"2022-04-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":35,"us":8,"cc":62,"cs":19,"ou":172,"oc":377,"ob":4,"al":66},{"y":2022,"m":4,"d":"2022-04-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":34,"us":7,"cc":57,"cs":18,"ou":160,"oc":336,"ob":4,"al":62},{"y":2022,"m":4,"d":"2022-04-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":32,"us":7,"cc":54,"cs":17,"ou":152,"oc":320,"ob":4,"al":58},{"y":2022,"m":4,"d":"2022-04-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":28,"us":6,"cc":48,"cs":15,"ou":139,"oc":295,"ob":3,"al":52},{"y":2022,"m":4,"d":"2022-04-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":30,"us":6,"cc":50,"cs":16,"ou":135,"oc":287,"ob":4,"al":54},{"y":2022,"m":4,"d":"2022-04-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":30,"us":7,"cc":53,"cs":17,"ou":115,"oc":254,"ob":4,"al":56},{"y":2022,"m":4,"d":"2022-04-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":25,"us":6,"cc":44,"cs":14,"ou":127,"oc":271,"ob":3,"al":47},{"y":2022,"m":4,"d":"2022-04-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":25,"us":5,"cc":43,"cs":13,"ou":123,"oc":262,"ob":3,"al":46},{"y":2022,"m":4,"d":"2022-04-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":24,"us":5,"cc":40,"cs":12,"ou":119,"oc":246,"ob":3,"al":44},{"y":2022,"m":5,"d":"2022-05-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":67,"us":15,"cc":113,"cs":36,"ou":344,"oc":722,"ob":8,"al":122},{"y":2022,"m":5,"d":"2022-05-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":40,"us":9,"cc":66,"cs":21,"ou":213,"oc":443,"ob":5,"al":72},{"y":2022,"m":5,"d":"2022-05-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":36,"us":8,"cc":61,"cs":19,"ou":197,"oc":418,"ob":4,"al":66},{"y":2022,"m":5,"d":"2022-05-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":30,"us":7,"cc":53,"cs":17,"ou":172,"oc":377,"ob":4,"al":56},{"y":2022,"m":5,"d":"2022-05-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":30,"us":6,"cc":49,"cs":16,"ou":160,"oc":336,"ob":4,"al":54},{"y":2022,"m":5,"d":"2022-05-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":28,"us":6,"cc":47,"cs":15,"ou":152,"oc":320,"ob":3,"al":51},{"y":2022,"m":5,"d":"2022-05-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":25,"us":5,"cc":41,"cs":13,"ou":139,"oc":295,"ob":3,"al":45},{"y":2022,"m":5,"d":"2022-05-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":25,"us":6,"cc":43,"cs":14,"ou":135,"oc":287,"ob":3,"al":46},{"y":2022,"m":5,"d":"2022-05-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":25,"us":6,"cc":45,"cs":14,"ou":115,"oc":254,"ob":3,"al":48},{"y":2022,"m":5,"d":"2022-05-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":21,"us":5,"cc":36,"cs":12,"ou":127,"oc":271,"ob":3,"al":39},{"y":2022,"m":5,"d":"2022-05-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":21,"us":5,"cc":36,"cs":11,"ou":123,"oc":262,"ob":3,"al":39},{"y":2022,"m":5,"d":"2022-05-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":21,"us":4,"cc":34,"cs":11,"ou":119,"oc":246,"ob":3,"al":37},{"y":2022,"m":6,"d":"2022-06-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":86,"us":19,"cc":144,"cs":45,"ou":344,"oc":722,"ob":10,"al":156},{"y":2022,"m":6,"d":"2022-06-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":52,"us":11,"cc":85,"cs":27,"ou":213,"oc":443,"ob":6,"al":93},{"y":2022,"m":6,"d":"2022-06-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":47,"us":10,"cc":80,"cs":25,"ou":197,"oc":418,"ob":6,"al":86},{"y":2022,"m":6,"d":"2022-06-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":40,"us":9,"cc":71,"cs":22,"ou":172,"oc":377,"ob":5,"al":75},{"y":2022,"m":6,"d":"2022-06-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":39,"us":9,"cc":65,"cs":21,"ou":160,"oc":336,"ob":5,"al":71},{"y":2022,"m":6,"d":"2022-06-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":36,"us":8,"cc":61,"cs":19,"ou":152,"oc":320,"ob":4,"al":66},{"y":2022,"m":6,"d":"2022-06-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":31,"us":7,"cc":53,"cs":17,"ou":139,"oc":295,"ob":4,"al":57},{"y":2022,"m":6,"d":"2022-06-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":32,"us":7,"cc":55,"cs":17,"ou":135,"oc":287,"ob":4,"al":59},{"y":2022,"m":6,"d":"2022-06-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":33,"us":7,"cc":57,"cs":18,"ou":115,"oc":254,"ob":4,"al":61},{"y":2022,"m":6,"d":"2022-06-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":27,"us":6,"cc":46,"cs":15,"ou":127,"oc":271,"ob":3,"al":50},{"y":2022,"m":6,"d":"2022-06-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":27,"us":6,"cc":46,"cs":14,"ou":123,"oc":262,"ob":3,"al":50},{"y":2022,"m":6,"d":"2022-06-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":27,"us":6,"cc":44,"cs":14,"ou":119,"oc":246,"ob":3,"al":48},{"y":2022,"m":7,"d":"2022-07-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":91,"us":20,"cc":152,"cs":48,"ou":344,"oc":722,"ob":11,"al":165},{"y":2022,"m":7,"d":"2022-07-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":56,"us":12,"cc":92,"cs":29,"ou":213,"oc":443,"ob":7,"al":101},{"y":2022,"m":7,"d":"2022-07-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":51,"us":11,"cc":87,"cs":27,"ou":197,"oc":418,"ob":6,"al":94},{"y":2022,"m":7,"d":"2022-07-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":43,"us":10,"cc":77,"cs":24,"ou":172,"oc":377,"ob":5,"al":82},{"y":2022,"m":7,"d":"2022-07-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":42,"us":9,"cc":70,"cs":22,"ou":160,"oc":336,"ob":5,"al":76},{"y":2022,"m":7,"d":"2022-07-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":39,"us":8,"cc":65,"cs":20,"ou":152,"oc":320,"ob":5,"al":71},{"y":2022,"m":7,"d":"2022-07-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":33,"us":7,"cc":55,"cs":18,"ou":139,"oc":295,"ob":4,"al":60},{"y":2022,"m":7,"d":"2022-07-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":34,"us":7,"cc":57,"cs":18,"ou":135,"oc":287,"ob":4,"al":62},{"y":2022,"m":7,"d":"2022-07-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":34,"us":8,"cc":60,"cs":19,"ou":115,"oc":254,"ob":4,"al":64},{"y":2022,"m":7,"d":"2022-07-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":29,"us":6,"cc":49,"cs":16,"ou":127,"oc":271,"ob":3,"al":53},{"y":2022,"m":7,"d":"2022-07-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":29,"us":6,"cc":49,"cs":16,"ou":123,"oc":262,"ob":3,"al":53},{"y":2022,"m":7,"d":"2022-07-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":30,"us":6,"cc":48,"cs":15,"ou":119,"oc":246,"ob":4,"al":53},{"y":2022,"m":8,"d":"2022-08-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":61,"us":14,"cc":103,"cs":32,"ou":344,"oc":722,"ob":7,"al":112},{"y":2022,"m":8,"d":"2022-08-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":38,"us":8,"cc":62,"cs":20,"ou":213,"oc":443,"ob":5,"al":68},{"y":2022,"m":8,"d":"2022-08-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":34,"us":8,"cc":59,"cs":18,"ou":197,"oc":418,"ob":4,"al":63},{"y":2022,"m":8,"d":"2022-08-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":30,"us":6,"cc":52,"cs":16,"ou":172,"oc":377,"ob":4,"al":56},{"y":2022,"m":8,"d":"2022-08-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":28,"us":6,"cc":46,"cs":15,"ou":160,"oc":336,"ob":3,"al":50},{"y":2022,"m":8,"d":"2022-08-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":25,"us":6,"cc":43,"cs":13,"ou":152,"oc":320,"ob":3,"al":46},{"y":2022,"m":8,"d":"2022-08-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":21,"us":5,"cc":36,"cs":12,"ou":139,"oc":295,"ob":3,"al":39},{"y":2022,"m":8,"d":"2022-08-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":22,"us":5,"cc":37,"cs":12,"ou":135,"oc":287,"ob":3,"al":40},{"y":2022,"m":8,"d":"2022-08-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":23,"us":5,"cc":40,"cs":12,"ou":115,"oc":254,"ob":3,"al":43},{"y":2022,"m":8,"d":"2022-08-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":20,"us":4,"cc":33,"cs":11,"ou":127,"oc":271,"ob":2,"al":36},{"y":2022,"m":8,"d":"2022-08-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":20,"us":4,"cc":33,"cs":11,"ou":123,"oc":262,"ob":2,"al":36},{"y":2022,"m":8,"d":"2022-08-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":20,"us":4,"cc":33,"cs":10,"ou":119,"oc":246,"ob":2,"al":36},{"y":2022,"m":9,"d":"2022-09-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":46,"us":10,"cc":76,"cs":24,"ou":344,"oc":722,"ob":6,"al":83},{"y":2022,"m":9,"d":"2022-09-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":28,"us":6,"cc":46,"cs":15,"ou":213,"oc":443,"ob":3,"al":50},{"y":2022,"m":9,"d":"2022-09-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":25,"us":6,"cc":43,"cs":14,"ou":197,"oc":418,"ob":3,"al":46},{"y":2022,"m":9,"d":"2022-09-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":21,"us":5,"cc":37,"cs":12,"ou":172,"oc":377,"ob":3,"al":39},{"y":2022,"m":9,"d":"2022-09-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":20,"us":4,"cc":33,"cs":11,"ou":160,"oc":336,"ob":2,"al":36},{"y":2022,"m":9,"d":"2022-09-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":18,"us":4,"cc":30,"cs":10,"ou":152,"oc":320,"ob":2,"al":33},{"y":2022,"m":9,"d":"2022-09-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":16,"us":3,"cc":26,"cs":8,"ou":139,"oc":295,"ob":2,"al":29},{"y":2022,"m":9,"d":"2022-09-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":16,"us":3,"cc":27,"cs":9,"ou":135,"oc":287,"ob":2,"al":29},{"y":2022,"m":9,"d":"2022-09-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":16,"us":4,"cc":30,"cs":9,"ou":115,"oc":254,"ob":2,"al":31},{"y":2022,"m":9,"d":"2022-09-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":15,"us":3,"cc":25,"cs":8,"ou":127,"oc":271,"ob":2,"al":27},{"y":2022,"m":9,"d":"2022-09-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":15,"us":3,"cc":25,"cs":8,"ou":123,"oc":262,"ob":2,"al":27},{"y":2022,"m":9,"d":"2022-09-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":15,"us":3,"cc":24,"cs":8,"ou":119,"oc":246,"ob":2,"al":27},{"y":2022,"m":10,"d":"2022-10-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":41,"us":9,"cc":68,"cs":21,"ou":344,"oc":722,"ob":5,"al":74},{"y":2022,"m":10,"d":"2022-10-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":25,"us":5,"cc":41,"cs":13,"ou":213,"oc":443,"ob":3,"al":45},{"y":2022,"m":10,"d":"2022-10-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":22,"us":5,"cc":37,"cs":12,"ou":197,"oc":418,"ob":3,"al":40},{"y":2022,"m":10,"d":"2022-10-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":18,"us":4,"cc":32,"cs":10,"ou":172,"oc":377,"ob":2,"al":34},{"y":2022,"m":10,"d":"2022-10-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":17,"us":4,"cc":29,"cs":9,"ou":160,"oc":336,"ob":2,"al":31},{"y":2022,"m":10,"d":"2022-10-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":16,"us":3,"cc":26,"cs":8,"ou":152,"oc":320,"ob":2,"al":29},{"y":2022,"m":10,"d":"2022-10-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":13,"us":3,"cc":23,"cs":7,"ou":139,"oc":295,"ob":2,"al":24},{"y":2022,"m":10,"d":"2022-10-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":14,"us":3,"cc":24,"cs":8,"ou":135,"oc":287,"ob":2,"al":26},{"y":2022,"m":10,"d":"2022-10-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":15,"us":3,"cc":26,"cs":8,"ou":115,"oc":254,"ob":2,"al":28},{"y":2022,"m":10,"d":"2022-10-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":13,"us":3,"cc":22,"cs":7,"ou":127,"oc":271,"ob":2,"al":24},{"y":2022,"m":10,"d":"2022-10-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":13,"us":3,"cc":22,"cs":7,"ou":123,"oc":262,"ob":2,"al":24},{"y":2022,"m":10,"d":"2022-10-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":12,"us":3,"cc":21,"cs":6,"ou":119,"oc":246,"ob":1,"al":22},{"y":2022,"m":11,"d":"2022-11-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":56,"us":12,"cc":93,"cs":30,"ou":344,"oc":722,"ob":7,"al":101},{"y":2022,"m":11,"d":"2022-11-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":34,"us":7,"cc":55,"cs":18,"ou":213,"oc":443,"ob":4,"al":61},{"y":2022,"m":11,"d":"2022-11-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":30,"us":6,"cc":50,"cs":16,"ou":197,"oc":418,"ob":4,"al":54},{"y":2022,"m":11,"d":"2022-11-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":25,"us":5,"cc":43,"cs":13,"ou":172,"oc":377,"ob":3,"al":46},{"y":2022,"m":11,"d":"2022-11-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":23,"us":5,"cc":38,"cs":12,"ou":160,"oc":336,"ob":3,"al":41},{"y":2022,"m":11,"d":"2022-11-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":21,"us":5,"cc":36,"cs":11,"ou":152,"oc":320,"ob":3,"al":39},{"y":2022,"m":11,"d":"2022-11-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":18,"us":4,"cc":31,"cs":10,"ou":139,"oc":295,"ob":2,"al":33},{"y":2022,"m":11,"d":"2022-11-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":20,"us":4,"cc":33,"cs":11,"ou":135,"oc":287,"ob":2,"al":36},{"y":2022,"m":11,"d":"2022-11-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":21,"us":4,"cc":36,"cs":12,"ou":115,"oc":254,"ob":3,"al":39},{"y":2022,"m":11,"d":"2022-11-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":18,"us":4,"cc":30,"cs":10,"ou":127,"oc":271,"ob":2,"al":33},{"y":2022,"m":11,"d":"2022-11-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":17,"us":4,"cc":30,"cs":9,"ou":123,"oc":262,"ob":2,"al":32},{"y":2022,"m":11,"d":"2022-11-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":17,"us":4,"cc":28,"cs":9,"ou":119,"oc":246,"ob":2,"al":31},{"y":2022,"m":12,"d":"2022-12-15","uf":"SP","es":"São Paulo","mu":"São Paulo","hs":"Hospital das Clínicas FMUSP","uc":61,"us":14,"cc":103,"cs":32,"ou":344,"oc":722,"ob":7,"al":112},{"y":2022,"m":12,"d":"2022-12-15","uf":"RJ","es":"Rio de Janeiro","mu":"Rio de Janeiro","hs":"Hospital Federal dos Servidores","uc":36,"us":8,"cc":60,"cs":19,"ou":213,"oc":443,"ob":4,"al":65},{"y":2022,"m":12,"d":"2022-12-15","uf":"MG","es":"Minas Gerais","mu":"Belo Horizonte","hs":"Hospital Eduardo de Menezes","uc":32,"us":7,"cc":54,"cs":17,"ou":197,"oc":418,"ob":4,"al":58},{"y":2022,"m":12,"d":"2022-12-15","uf":"RS","es":"Rio Grande do Sul","mu":"Porto Alegre","hs":"Hospital de Clínicas de POA","uc":26,"us":6,"cc":46,"cs":15,"ou":172,"oc":377,"ob":3,"al":49},{"y":2022,"m":12,"d":"2022-12-15","uf":"PR","es":"Paraná","mu":"Curitiba","hs":"Complexo Hospitalar do Trabalhador","uc":25,"us":6,"cc":42,"cs":13,"ou":160,"oc":336,"ob":3,"al":46},{"y":2022,"m":12,"d":"2022-12-15","uf":"BA","es":"Bahia","mu":"Salvador","hs":"Hospital Espanhol Referência","uc":24,"us":5,"cc":40,"cs":12,"ou":152,"oc":320,"ob":3,"al":44},{"y":2022,"m":12,"d":"2022-12-15","uf":"PE","es":"Pernambuco","mu":"Recife","hs":"Hospital Universitário Oswaldo Cruz","uc":21,"us":4,"cc":35,"cs":11,"ou":139,"oc":295,"ob":3,"al":38},{"y":2022,"m":12,"d":"2022-12-15","uf":"CE","es":"Ceará","mu":"Fortaleza","hs":"Hospital Leonardo Da Vinci","uc":22,"us":5,"cc":37,"cs":12,"ou":135,"oc":287,"ob":3,"al":40},{"y":2022,"m":12,"d":"2022-12-15","uf":"AM","es":"Amazonas","mu":"Manaus","hs":"Hospital Delphina Aziz","uc":23,"us":5,"cc":40,"cs":13,"ou":115,"oc":254,"ob":3,"al":43},{"y":2022,"m":12,"d":"2022-12-15","uf":"DF","es":"Distrito Federal","mu":"Brasília","hs":"Hospital Regional da Asa Norte","uc":20,"us":4,"cc":33,"cs":11,"ou":127,"oc":271,"ob":2,"al":36},{"y":2022,"m":12,"d":"2022-12-15","uf":"SC","es":"Santa Catarina","mu":"Florianópolis","hs":"Hospital Governador Celso Ramos","uc":19,"us":4,"cc":32,"cs":10,"ou":123,"oc":262,"ob":2,"al":35},{"y":2022,"m":12,"d":"2022-12-15","uf":"GO","es":"Goiás","mu":"Goiânia","hs":"HCamp Goiânia","uc":18,"us":4,"cc":30,"cs":10,"ou":119,"oc":246,"ob":2,"al":33}],"truncated":false,"totalOriginalRows":432};
+    const MONTHS = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+
+    const state = {
+      records: EMBEDDED_DATA.records || [],
+      sourceLabel: 'Dados incorporados no HTML',
+      year: 'all',
+      uf: 'ALL',
+      metric: 'uti',
+      search: '',
+      sortKey: 'taxaUti',
+      sortDir: 'desc'
+    };
+
+    const fmtNum = (n) => new Intl.NumberFormat('pt-BR').format(Math.round(n));
+    const fmtPct = (n) => n.toFixed(1).replace('.', ',') + '%';
+
+    function parseCsvText(text, yearHint) {
+      const lines = text.replace(/^﻿/, '').split(/\r?\n/).filter(Boolean);
+      if (lines.length < 2) return [];
+      const sep = lines[0].includes(';') ? ';' : ',';
+      const headers = lines[0].split(sep).map(h => h.replace(/^"|"$/g, '').trim().toLowerCase());
+      const findIdx = (keys) => headers.findIndex(h => keys.some(k => h.includes(k)));
+      const iDate = findIdx(['data', 'date']);
+      const iUf = findIdx(['uf', 'estadosigla', 'estado']);
+      const iEs = findIdx(['estado']);
+      const iMun = findIdx(['municipio', 'cidade']);
+      const iEst = findIdx(['estabelecimento', 'cnes', 'hospital']);
+      const iUc = findIdx(['confirmadouti', 'ocupacaoconfirmadouti']);
+      const iUs = findIdx(['suspeitouti', 'ocupacaosuspeitouti']);
+      const iCc = findIdx(['confirmadocli', 'ocupacaoconfirmadocli']);
+      const iCs = findIdx(['suspeitocli', 'ocupacaosuspeitocli']);
+      const iOu = findIdx(['ofertahosputi', 'ofertauti', 'leitosuti']);
+      const iOc = findIdx(['ofertahospcli', 'ofertacli', 'leitoscli']);
+      const iOb = findIdx(['obito']);
+      const iAl = findIdx(['alta']);
+
+      const out = [];
+      for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split(sep).map(c => c.replace(/^"|"$/g, '').trim());
+        const rawDate = iDate >= 0 ? cols[iDate] : '';
+        let y = yearHint, m = 1;
+        const iso = rawDate.match(/^(\d{4})-(\d{1,2})/);
+        const br = rawDate.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+        if (iso) { y = Number(iso[1]); m = Number(iso[2]); }
+        else if (br) { y = Number(br[3]); m = Number(br[2]); }
+        out.push({
+          y, m, d: rawDate,
+          uf: iUf >= 0 ? (cols[iUf] || 'ND').slice(0, 2).toUpperCase() : 'ND',
+          es: iEs >= 0 ? (cols[iEs] || 'Não informado') : (iUf >= 0 ? cols[iUf] : 'Não informado'),
+          mu: iMun >= 0 ? (cols[iMun] || '') : '',
+          hs: iEst >= 0 ? (cols[iEst] || '') : '',
+          uc: iUc >= 0 ? Number(cols[iUc]) || 0 : 0,
+          us: iUs >= 0 ? Number(cols[iUs]) || 0 : 0,
+          cc: iCc >= 0 ? Number(cols[iCc]) || 0 : 0,
+          cs: iCs >= 0 ? Number(cols[iCs]) || 0 : 0,
+          ou: iOu >= 0 ? Number(cols[iOu]) || 0 : 0,
+          oc: iOc >= 0 ? Number(cols[iOc]) || 0 : 0,
+          ob: iOb >= 0 ? Number(cols[iOb]) || 0 : 0,
+          al: iAl >= 0 ? Number(cols[iAl]) || 0 : 0,
+        });
+      }
+      return out;
+    }
+
+    async function tryFetchRepoCsvs() {
+      if (window.location.protocol === 'file:') return;
+      try {
+        const years = [2020, 2021, 2022];
+        const fetched = [];
+        for (const y of years) {
+          const resp = await fetch('./data/ocupacao_' + y + '.csv');
+          if (resp.ok) {
+            const text = await resp.text();
+            fetched.push(...parseCsvText(text, y));
+          }
+        }
+        if (fetched.length > 0) {
+          state.records = fetched;
+          state.sourceLabel = 'Lido de data/ocupacao_2020–2022.csv';
+          populateUfSelect();
+          render();
+        }
+      } catch (e) {
+        // Keep embedded data fallback
+      }
+    }
+
+    function populateUfSelect() {
+      const select = document.getElementById('ufFilter');
+      const current = select.value;
+      const ufs = Array.from(new Set(state.records.map(r => r.uf).filter(Boolean))).sort();
+      select.innerHTML = '<option value="ALL">Todas as UFs (' + ufs.length + ')</option>' +
+        ufs.map(u => '<option value="' + u + '">' + u + '</option>').join('');
+      if (ufs.includes(current)) select.value = current;
+    }
+
+    function getFilteredRecords() {
+      const q = state.search.trim().toLowerCase();
+      return state.records.filter(r => {
+        if (state.year !== 'all' && String(r.y) !== state.year) return false;
+        if (state.uf !== 'ALL' && r.uf !== state.uf) return false;
+        if (q) {
+          const hay = (r.uf + ' ' + r.es + ' ' + r.mu + ' ' + r.hs).toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
+    }
+
+    function computeAggregates(recs) {
+      let utiOcup = 0, utiOferta = 0, cliOcup = 0, cliOferta = 0, obitos = 0, altas = 0;
+      const byYearMonth = {};
+      const byUf = {};
+
+      for (const r of recs) {
+        const uo = (r.uc || 0) + (r.us || 0);
+        const co = (r.cc || 0) + (r.cs || 0);
+        utiOcup += uo;
+        utiOferta += (r.ou || 0);
+        cliOcup += co;
+        cliOferta += (r.oc || 0);
+        obitos += (r.ob || 0);
+        altas += (r.al || 0);
+
+        const ymKey = r.y + '-' + r.m;
+        if (!byYearMonth[ymKey]) {
+          byYearMonth[ymKey] = { y: r.y, m: r.m, uo: 0, ou: 0, co: 0, oc: 0, uc: 0, cc: 0 };
+        }
+        byYearMonth[ymKey].uo += uo;
+        byYearMonth[ymKey].ou += (r.ou || 0);
+        byYearMonth[ymKey].co += co;
+        byYearMonth[ymKey].oc += (r.oc || 0);
+        byYearMonth[ymKey].uc += (r.uc || 0);
+        byYearMonth[ymKey].cc += (r.cc || 0);
+
+        if (!byUf[r.uf]) {
+          byUf[r.uf] = { uf: r.uf, estado: r.es, utiOcup: 0, utiOferta: 0, cliOcup: 0, cliOferta: 0, obitos: 0, altas: 0, registros: 0 };
+        }
+        byUf[r.uf].utiOcup += uo;
+        byUf[r.uf].utiOferta += (r.ou || 0);
+        byUf[r.uf].cliOcup += co;
+        byUf[r.uf].cliOferta += (r.oc || 0);
+        byUf[r.uf].obitos += (r.ob || 0);
+        byUf[r.uf].altas += (r.al || 0);
+        byUf[r.uf].registros += 1;
+      }
+
+      const states = Object.values(byUf).map(s => ({
+        ...s,
+        taxaUti: s.utiOferta > 0 ? Math.min(130, (s.utiOcup / s.utiOferta) * 100) : 0,
+        taxaCli: s.cliOferta > 0 ? Math.min(130, (s.cliOcup / s.cliOferta) * 100) : 0,
+      }));
+
+      return { utiOcup, utiOferta, cliOcup, cliOferta, obitos, altas, byYearMonth, states };
+    }
+
+    function renderAnnualCards() {
+      const container = document.getElementById('comparativo-anual');
+      const years = [2020, 2021, 2022];
+      container.innerHTML = years.map(y => {
+        const subset = state.records.filter(r => r.y === y && (state.uf === 'ALL' || r.uf === state.uf));
+        let uo = 0, ou = 0, co = 0, oc = 0, ob = 0, al = 0;
+        subset.forEach(r => {
+          uo += (r.uc || 0) + (r.us || 0);
+          ou += (r.ou || 0);
+          co += (r.cc || 0) + (r.cs || 0);
+          oc += (r.oc || 0);
+          ob += (r.ob || 0);
+          al += (r.al || 0);
+        });
+        const rateUti = ou > 0 ? (uo / ou) * 100 : 0;
+        const rateCli = oc > 0 ? (co / oc) * 100 : 0;
+        const cls = rateUti >= 85 ? 'status-crit' : rateUti >= 65 ? 'status-warn' : 'status-ok';
+        const lbl = rateUti >= 85 ? 'Crítico' : rateUti >= 65 ? 'Atenção' : 'Estável';
+        return '<article class="annual-card">' +
+          '<div class="annual-top"><span class="annual-year">' + y + '</span><span class="font-mono" style="font-size:12px;color:#64748b;">' + fmtNum(subset.length) + ' registros</span></div>' +
+          '<div class="annual-row"><span>Taxa média UTI</span><span class="font-mono ' + cls + '">' + fmtPct(rateUti) + ' · ' + lbl + '</span></div>' +
+          '<div class="annual-row"><span>Taxa média Clínica</span><span class="font-mono">' + fmtPct(rateCli) + '</span></div>' +
+          '<div class="annual-row"><span>Óbitos / Altas</span><span class="font-mono">' + fmtNum(ob) + ' / ' + fmtNum(al) + '</span></div>' +
+        '</article>';
+      }).join('');
+    }
+
+    function render() {
+      const recs = getFilteredRecords();
+      const agg = computeAggregates(recs);
+      const isUti = state.metric === 'uti';
+
+      document.getElementById('datasetSourceLabel').textContent = state.sourceLabel;
+      document.getElementById('datasetCountLabel').textContent =
+        fmtNum(recs.length) + ' registros filtrados · ' + agg.states.length + ' UFs';
+
+      const avgRate = isUti
+        ? (agg.utiOferta > 0 ? (agg.utiOcup / agg.utiOferta) * 100 : 0)
+        : (agg.cliOferta > 0 ? (agg.cliOcup / agg.cliOferta) * 100 : 0);
+
+      document.getElementById('kpiRate').textContent = fmtPct(avgRate);
+      document.getElementById('kpiRateSub').textContent = isUti
+        ? 'Média sobre ' + fmtNum(agg.utiOferta) + ' leitos-dia UTI ofertados'
+        : 'Média sobre ' + fmtNum(agg.cliOferta) + ' leitos-dia clínicos ofertados';
+
+      let peakVal = 0;
+      let peakLabel = '—';
+      Object.values(agg.byYearMonth).forEach(m => {
+        const v = isUti ? m.uc : m.cc;
+        if (v > peakVal) {
+          peakVal = v;
+          peakLabel = MONTHS[m.m - 1] + '/' + m.y;
+        }
+      });
+
+      document.getElementById('kpiPeak').textContent = fmtNum(peakVal);
+      document.getElementById('kpiPeakSub').textContent = 'Pico registrado em ' + peakLabel;
+
+      document.getElementById('kpiOccupied').textContent = fmtNum(isUti ? agg.utiOcup : agg.cliOcup);
+      document.getElementById('kpiOccupiedSub').textContent = isUti ? 'Internações em UTI (conf. + susp.)' : 'Internações em enfermaria clínica';
+
+      document.getElementById('kpiOutcomes').textContent = fmtNum(agg.altas);
+      document.getElementById('kpiOutcomesSub').textContent = 'Altas · ' + fmtNum(agg.obitos) + ' óbitos confirmados';
+
+      renderLineChart(agg.byYearMonth, isUti);
+      renderStateBars(agg.states, isUti);
+      renderAnnualCards();
+      renderTable(agg.states);
+    }
+
+    function renderLineChart(byYearMonth, isUti) {
+      const svg = document.getElementById('lineChartSvg');
+      const tooltip = document.getElementById('chartTooltip');
+      const W = 760, H = 300;
+      const pad = { top: 20, right: 20, bottom: 34, left: 44 };
+      const plotW = W - pad.left - pad.right;
+      const plotH = H - pad.top - pad.bottom;
+
+      const years = [
+        { y: 2020, color: '#475569' },
+        { y: 2021, color: '#dc2626' },
+        { y: 2022, color: '#0f766e' }
+      ];
+
+      let maxRate = 100;
+      const series = {};
+      years.forEach(({ y }) => {
+        series[y] = MONTHS.map((_, idx) => {
+          const item = byYearMonth[y + '-' + (idx + 1)];
+          if (!item) return null;
+          const rate = isUti
+            ? (item.ou > 0 ? (item.uo / item.ou) * 100 : 0)
+            : (item.oc > 0 ? (item.co / item.oc) * 100 : 0);
+          if (rate > maxRate) maxRate = Math.ceil(rate / 10) * 10;
+          return rate;
+        });
+      });
+
+      const xFor = (i) => pad.left + (i / 11) * plotW;
+      const yFor = (val) => pad.top + plotH - (val / maxRate) * plotH;
+
+      let html = '';
+      [0, 25, 50, 75, 100].forEach(tick => {
+        if (tick > maxRate) return;
+        const y = yFor(tick);
+        html += '<line x1="' + pad.left + '" y1="' + y + '" x2="' + (W - pad.right) + '" y2="' + y + '" stroke="#e2e8f0" stroke-dasharray="3 3" />';
+        html += '<text x="' + (pad.left - 8) + '" y="' + (y + 4) + '" text-anchor="end" font-size="11" fill="#64748b" font-family="JetBrains Mono, monospace">' + tick + '%</text>';
+      });
+
+      if (maxRate >= 85) {
+        const y85 = yFor(85);
+        html += '<line x1="' + pad.left + '" y1="' + y85 + '" x2="' + (W - pad.right) + '" y2="' + y85 + '" stroke="#dc2626" stroke-opacity="0.45" stroke-dasharray="5 4" />';
+        html += '<text x="' + (W - pad.right) + '" y="' + (y85 - 5) + '" text-anchor="end" font-size="10" fill="#dc2626">Limiar 85%</text>';
+      }
+
+      MONTHS.forEach((m, i) => {
+        html += '<text x="' + xFor(i) + '" y="' + (H - 10) + '" text-anchor="middle" font-size="11" fill="#64748b">' + m + '</text>';
+      });
+
+      years.forEach(({ y, color }) => {
+        if (state.year !== 'all' && Number(state.year) !== y) return;
+        const pts = series[y];
+        let d = '';
+        pts.forEach((val, i) => {
+          if (val === null) return;
+          const cmd = d === '' ? 'M' : 'L';
+          d += cmd + xFor(i).toFixed(1) + ',' + yFor(val).toFixed(1) + ' ';
+        });
+        if (d) {
+          html += '<path d="' + d + '" fill="none" stroke="' + color + '" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" />';
+          pts.forEach((val, i) => {
+            if (val === null) return;
+            html += '<circle cx="' + xFor(i).toFixed(1) + '" cy="' + yFor(val).toFixed(1) + '" r="3.2" fill="#ffffff" stroke="' + color + '" stroke-width="2" />';
+          });
+        }
+      });
+
+      MONTHS.forEach((_, i) => {
+        const bw = plotW / 12;
+        const bx = xFor(i) - bw / 2;
+        html += '<rect data-month="' + i + '" x="' + Math.max(pad.left, bx) + '" y="' + pad.top + '" width="' + bw + '" height="' + plotH + '" fill="transparent" style="cursor:crosshair;" />';
+      });
+
+      svg.innerHTML = html;
+
+      svg.querySelectorAll('rect[data-month]').forEach(rect => {
+        rect.addEventListener('mouseenter', () => {
+          const idx = Number(rect.getAttribute('data-month'));
+          let lines = '<div style="font-weight:600;margin-bottom:4px;">' + MONTHS[idx] + '</div>';
+          years.forEach(({ y, color }) => {
+            if (state.year !== 'all' && Number(state.year) !== y) return;
+            const val = series[y][idx];
+            lines += '<div style="display:flex;justify-content:space-between;gap:12px;">' +
+              '<span><span style="display:inline-block;width:8px;height:8px;background:' + color + ';border-radius:2px;margin-right:6px;"></span>' + y + '</span>' +
+              '<span style="font-family:JetBrains Mono,monospace;">' + (val !== null ? fmtPct(val) : '—') + '</span></div>';
+          });
+          tooltip.innerHTML = lines;
+          tooltip.style.display = 'block';
+        });
+        rect.addEventListener('mousemove', (e) => {
+          const box = svg.parentElement.getBoundingClientRect();
+          tooltip.style.left = Math.min(box.width - 185, Math.max(8, e.clientX - box.left + 12)) + 'px';
+          tooltip.style.top = Math.max(8, e.clientY - box.top - 16) + 'px';
+        });
+        rect.addEventListener('mouseleave', () => {
+          tooltip.style.display = 'none';
+        });
+      });
+    }
+
+    function renderStateBars(states, isUti) {
+      const container = document.getElementById('stateBars');
+      const sorted = [...states]
+        .sort((a, b) => (isUti ? b.taxaUti - a.taxaUti : b.taxaCli - a.taxaCli))
+        .slice(0, 8);
+
+      if (sorted.length === 0) {
+        container.innerHTML = '<div style="font-size:13px;color:#64748b;">Nenhum estado encontrado para os filtros aplicados.</div>';
+        return;
+      }
+
+      container.innerHTML = sorted.map(s => {
+        const rate = isUti ? s.taxaUti : s.taxaCli;
+        const barColor = rate >= 85 ? '#dc2626' : rate >= 65 ? '#d97706' : '#16a34a';
+        const statusLabel = rate >= 85 ? 'Crítico' : rate >= 65 ? 'Atenção' : 'Estável';
+        return '<div class="state-row">' +
+          '<span style="font-weight:600;font-family:JetBrains Mono,monospace;">' + s.uf + '</span>' +
+          '<div class="bar-track"><div class="bar-fill" style="width:' + Math.min(100, rate).toFixed(1) + '%;background:' + barColor + ';"></div></div>' +
+          '<span class="tabular" style="text-align:right;font-size:12px;">' + fmtPct(rate) + ' · ' + statusLabel + '</span>' +
+        '</div>';
+      }).join('');
+    }
+
+    function renderTable(states) {
+      const tbody = document.getElementById('tableBody');
+      const sorted = [...states].sort((a, b) => {
+        const av = a[state.sortKey];
+        const bv = b[state.sortKey];
+        if (typeof av === 'string') {
+          return state.sortDir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av);
+        }
+        return state.sortDir === 'asc' ? av - bv : bv - av;
+      });
+
+      tbody.innerHTML = sorted.map(s => {
+        const cls = s.taxaUti >= 85 ? 'status-crit' : s.taxaUti >= 65 ? 'status-warn' : 'status-ok';
+        const lbl = s.taxaUti >= 85 ? 'Crítico' : s.taxaUti >= 65 ? 'Atenção' : 'Estável';
+        return '<tr>' +
+          '<td class="font-mono" style="font-weight:600;">' + s.uf + '</td>' +
+          '<td>' + s.estado + '</td>' +
+          '<td class="num tabular ' + cls + '">' + fmtPct(s.taxaUti) + ' · ' + lbl + '</td>' +
+          '<td class="num tabular">' + fmtNum(s.utiOcup) + '</td>' +
+          '<td class="num tabular">' + fmtPct(s.taxaCli) + '</td>' +
+          '<td class="num tabular">' + fmtNum(s.obitos) + '</td>' +
+          '<td class="num tabular">' + fmtNum(s.altas) + '</td>' +
+          '<td class="num tabular">' + fmtNum(s.registros) + '</td>' +
+        '</tr>';
+      }).join('');
+    }
+
+    document.querySelectorAll('.year-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.year = btn.getAttribute('data-year');
+        render();
+      });
+    });
+
+    document.getElementById('ufFilter').addEventListener('change', (e) => {
+      state.uf = e.target.value;
+      render();
+    });
+    document.getElementById('metricFilter').addEventListener('change', (e) => {
+      state.metric = e.target.value;
+      render();
+    });
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      state.search = e.target.value;
+      render();
+    });
+
+    document.querySelectorAll('th[data-sort]').forEach(th => {
+      th.addEventListener('click', () => {
+        const key = th.getAttribute('data-sort');
+        if (state.sortKey === key) {
+          state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
+        } else {
+          state.sortKey = key;
+          state.sortDir = 'desc';
+        }
+        render();
+      });
+    });
+
+    document.getElementById('csvFileInput').addEventListener('change', async (e) => {
+      const files = Array.from(e.target.files || []);
+      if (!files.length) return;
+      const loaded = [];
+      for (const file of files) {
+        const text = await file.text();
+        const yearHint = file.name.includes('2020') ? 2020 : file.name.includes('2021') ? 2021 : 2022;
+        loaded.push(...parseCsvText(text, yearHint));
+      }
+      if (loaded.length > 0) {
+        state.records = loaded;
+        state.sourceLabel = 'Carregado via CSV local';
+        populateUfSelect();
+        render();
+      }
+    });
+
+    populateUfSelect();
+    render();
+    tryFetchRepoCsvs();
+  </script>
+</body>
+</html>

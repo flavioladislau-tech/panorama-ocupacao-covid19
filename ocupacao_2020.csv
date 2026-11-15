@@ -1,0 +1,145 @@
+dataNotificacao;ano;mes;uf;estado;municipio;estabelecimento;ocupacaoConfirmadoUti;ocupacaoSuspeitoUti;ocupacaoConfirmadoCli;ocupacaoSuspeitoCli;ofertaUti;ofertaCli;obitosConfirmados;altasConfirmadas
+2020-01-15;2020;1;SP;"São Paulo";"São Paulo";"Hospital das Clínicas FMUSP";19;4;32;10;378;792;5;27
+2020-01-15;2020;1;RJ;"Rio de Janeiro";"Rio de Janeiro";"Hospital Federal dos Servidores";11;3;19;6;234;486;3;16
+2020-01-15;2020;1;MG;"Minas Gerais";"Belo Horizonte";"Hospital Eduardo de Menezes";11;2;17;6;216;459;3;15
+2020-01-15;2020;1;RS;"Rio Grande do Sul";"Porto Alegre";"Hospital de Clínicas de POA";9;2;16;5;189;414;2;13
+2020-01-15;2020;1;PR;"Paraná";"Curitiba";"Complexo Hospitalar do Trabalhador";8;2;14;4;176;369;2;11
+2020-01-15;2020;1;BA;"Bahia";"Salvador";"Hospital Espanhol Referência";7;2;14;4;167;351;2;11
+2020-01-15;2020;1;PE;"Pernambuco";"Recife";"Hospital Universitário Oswaldo Cruz";7;1;12;4;153;324;2;10
+2020-01-15;2020;1;CE;"Ceará";"Fortaleza";"Hospital Leonardo Da Vinci";7;1;12;4;149;315;2;10
+2020-01-15;2020;1;AM;"Amazonas";"Manaus";"Hospital Delphina Aziz";7;1;12;4;126;279;2;10
+2020-01-15;2020;1;DF;"Distrito Federal";"Brasília";"Hospital Regional da Asa Norte";6;1;11;4;140;297;2;9
+2020-01-15;2020;1;SC;"Santa Catarina";"Florianópolis";"Hospital Governador Celso Ramos";6;1;11;3;135;288;2;9
+2020-01-15;2020;1;GO;"Goiás";"Goiânia";"HCamp Goiânia";6;1;11;3;131;270;2;9
+2020-02-15;2020;2;SP;"São Paulo";"São Paulo";"Hospital das Clínicas FMUSP";35;8;59;19;378;792;9;49
+2020-02-15;2020;2;RJ;"Rio de Janeiro";"Rio de Janeiro";"Hospital Federal dos Servidores";21;5;35;11;234;486;5;29
+2020-02-15;2020;2;MG;"Minas Gerais";"Belo Horizonte";"Hospital Eduardo de Menezes";19;4;32;10;216;459;5;27
+2020-02-15;2020;2;RS;"Rio Grande do Sul";"Porto Alegre";"Hospital de Clínicas de POA";16;3;27;9;189;414;4;22
+2020-02-15;2020;2;PR;"Paraná";"Curitiba";"Complexo Hospitalar do Trabalhador";15;3;24;8;176;369;4;20
+2020-02-15;2020;2;BA;"Bahia";"Salvador";"Hospital Espanhol Referência";13;3;23;7;167;351;3;19
+2020-02-15;2020;2;PE;"Pernambuco";"Recife";"Hospital Universitário Oswaldo Cruz";11;3;20;6;153;324;3;16
+2020-02-15;2020;2;CE;"Ceará";"Fortaleza";"Hospital Leonardo Da Vinci";12;3;21;7;149;315;3;17
+2020-02-15;2020;2;AM;"Amazonas";"Manaus";"Hospital Delphina Aziz";13;3;23;7;126;279;3;19
+2020-02-15;2020;2;DF;"Distrito Federal";"Brasília";"Hospital Regional da Asa Norte";11;3;19;6;140;297;3;16
+2020-02-15;2020;2;SC;"Santa Catarina";"Florianópolis";"Hospital Governador Celso Ramos";11;3;19;6;135;288;3;16
+2020-02-15;2020;2;GO;"Goiás";"Goiânia";"HCamp Goiânia";11;2;17;6;131;270;3;15
+2020-03-15;2020;3;SP;"São Paulo";"São Paulo";"Hospital das Clínicas FMUSP";109;24;182;58;378;792;27;151
+2020-03-15;2020;3;RJ;"Rio de Janeiro";"Rio de Janeiro";"Hospital Federal dos Servidores";65;14;107;34;234;486;16;89
+2020-03-15;2020;3;MG;"Minas Gerais";"Belo Horizonte";"Hospital Eduardo de Menezes";57;13;97;30;216;459;14;80
+2020-03-15;2020;3;RS;"Rio Grande do Sul";"Porto Alegre";"Hospital de Clínicas de POA";48;10;83;26;189;414;12;68
+2020-03-15;2020;3;PR;"Paraná";"Curitiba";"Complexo Hospitalar do Trabalhador";45;10;74;24;176;369;11;62
+2020-03-15;2020;3;BA;"Bahia";"Salvador";"Hospital Espanhol Referência";42;9;70;22;167;351;11;58
+2020-03-15;2020;3;PE;"Pernambuco";"Recife";"Hospital Universitário Oswaldo Cruz";37;8;62;20;153;324;9;51
+2020-03-15;2020;3;CE;"Ceará";"Fortaleza";"Hospital Leonardo Da Vinci";39;9;66;21;149;315;10;55
+2020-03-15;2020;3;AM;"Amazonas";"Manaus";"Hospital Delphina Aziz";40;9;71;23;126;279;10;58
+2020-03-15;2020;3;DF;"Distrito Federal";"Brasília";"Hospital Regional da Asa Norte";35;8;59;19;140;297;9;49
+2020-03-15;2020;3;SC;"Santa Catarina";"Florianópolis";"Hospital Governador Celso Ramos";34;7;58;18;135;288;9;48
+2020-03-15;2020;3;GO;"Goiás";"Goiânia";"HCamp Goiânia";33;7;54;17;131;270;8;45
+2020-04-15;2020;4;SP;"São Paulo";"São Paulo";"Hospital das Clínicas FMUSP";183;40;306;96;378;792;46;254
+2020-04-15;2020;4;RJ;"Rio de Janeiro";"Rio de Janeiro";"Hospital Federal dos Servidores";108;24;179;56;234;486;27;149
+2020-04-15;2020;4;MG;"Minas Gerais";"Belo Horizonte";"Hospital Eduardo de Menezes";96;21;163;51;216;459;24;135
+2020-04-15;2020;4;RS;"Rio Grande do Sul";"Porto Alegre";"Hospital de Clínicas de POA";80;18;140;44;189;414;20;114
+2020-04-15;2020;4;PR;"Paraná";"Curitiba";"Complexo Hospitalar do Trabalhador";77;17;129;41;176;369;19;107
+2020-04-15;2020;4;BA;"Bahia";"Salvador";"Hospital Espanhol Referência";73;16;122;38;167;351;18;101
+2020-04-15;2020;4;PE;"Pernambuco";"Recife";"Hospital Universitário Oswaldo Cruz";64;14;108;34;153;324;16;89
+2020-04-15;2020;4;CE;"Ceará";"Fortaleza";"Hospital Leonardo Da Vinci";68;15;114;36;149;315;17;95
+2020-04-15;2020;4;AM;"Amazonas";"Manaus";"Hospital Delphina Aziz";69;15;122;38;126;279;17;99
+2020-04-15;2020;4;DF;"Distrito Federal";"Brasília";"Hospital Regional da Asa Norte";59;13;100;31;140;297;15;83
+2020-04-15;2020;4;SC;"Santa Catarina";"Florianópolis";"Hospital Governador Celso Ramos";57;12;96;30;135;288;14;80
+2020-04-15;2020;4;GO;"Goiás";"Goiânia";"HCamp Goiânia";55;12;90;29;131;270;14;75
+2020-05-15;2020;5;SP;"São Paulo";"São Paulo";"Hospital das Clínicas FMUSP";235;51;392;124;378;792;59;326
+2020-05-15;2020;5;RJ;"Rio de Janeiro";"Rio de Janeiro";"Hospital Federal dos Servidores";139;31;230;73;234;486;35;192
+2020-05-15;2020;5;MG;"Minas Gerais";"Belo Horizonte";"Hospital Eduardo de Menezes";125;28;212;67;216;459;31;175
+2020-05-15;2020;5;RS;"Rio Grande do Sul";"Porto Alegre";"Hospital de Clínicas de POA";107;23;185;59;189;414;27;152
+2020-05-15;2020;5;PR;"Paraná";"Curitiba";"Complexo Hospitalar do Trabalhador";103;23;173;54;176;369;26;144
+2020-05-15;2020;5;BA;"Bahia";"Salvador";"Hospital Espanhol Referência";97;21;163;51;167;351;24;135
+2020-05-15;2020;5;PE;"Pernambuco";"Recife";"Hospital Universitário Oswaldo Cruz";85;19;144;45;153;324;21;119
+2020-05-15;2020;5;CE;"Ceará";"Fortaleza";"Hospital Leonardo Da Vinci";89;19;149;47;149;315;22;124
+2020-05-15;2020;5;AM;"Amazonas";"Manaus";"Hospital Delphina Aziz";89;20;157;50;126;279;22;128
+2020-05-15;2020;5;DF;"Distrito Federal";"Brasília";"Hospital Regional da Asa Norte";75;17;128;40;140;297;19;106
+2020-05-15;2020;5;SC;"Santa Catarina";"Florianópolis";"Hospital Governador Celso Ramos";73;16;124;39;135;288;18;102
+2020-05-15;2020;5;GO;"Goiás";"Goiânia";"HCamp Goiânia";72;16;118;37;131;270;18;99
+2020-06-15;2020;6;SP;"São Paulo";"São Paulo";"Hospital das Clínicas FMUSP";246;54;411;130;378;792;62;342
+2020-06-15;2020;6;RJ;"Rio de Janeiro";"Rio de Janeiro";"Hospital Federal dos Servidores";148;32;245;77;234;486;37;204
+2020-06-15;2020;6;MG;"Minas Gerais";"Belo Horizonte";"Hospital Eduardo de Menezes";134;30;228;72;216;459;34;188
+2020-06-15;2020;6;RS;"Rio Grande do Sul";"Porto Alegre";"Hospital de Clínicas de POA";116;25;202;64;189;414;29;165
+2020-06-15;2020;6;PR;"Paraná";"Curitiba";"Complexo Hospitalar do Trabalhador";112;25;187;59;176;369;28;155
+2020-06-15;2020;6;BA;"Bahia";"Salvador";"Hospital Espanhol Referência";104;23;175;55;167;351;26;145
+2020-06-15;2020;6;PE;"Pernambuco";"Recife";"Hospital Universitário Oswaldo Cruz";90;20;152;48;153;324;23;126
+2020-06-15;2020;6;CE;"Ceará";"Fortaleza";"Hospital Leonardo Da Vinci";93;20;157;49;149;315;23;130
+2020-06-15;2020;6;AM;"Amazonas";"Manaus";"Hospital Delphina Aziz";93;20;164;52;126;279;23;134
+2020-06-15;2020;6;DF;"Distrito Federal";"Brasília";"Hospital Regional da Asa Norte";79;17;134;42;140;297;20;111
+2020-06-15;2020;6;SC;"Santa Catarina";"Florianópolis";"Hospital Governador Celso Ramos";77;17;131;42;135;288;19;108
+2020-06-15;2020;6;GO;"Goiás";"Goiânia";"HCamp Goiânia";77;17;127;40;131;270;19;106
+2020-07-15;2020;7;SP;"São Paulo";"São Paulo";"Hospital das Clínicas FMUSP";236;52;394;125;378;792;59;328
+2020-07-15;2020;7;RJ;"Rio de Janeiro";"Rio de Janeiro";"Hospital Federal dos Servidores";144;31;238;75;234;486;36;199
+2020-07-15;2020;7;MG;"Minas Gerais";"Belo Horizonte";"Hospital Eduardo de Menezes";132;29;224;71;216;459;33;185
+2020-07-15;2020;7;RS;"Rio Grande do Sul";"Porto Alegre";"Hospital de Clínicas de POA";114;25;198;63;189;414;29;162
+2020-07-15;2020;7;PR;"Paraná";"Curitiba";"Complexo Hospitalar do Trabalhador";109;24;182;58;176;369;27;151
+2020-07-15;2020;7;BA;"Bahia";"Salvador";"Hospital Espanhol Referência";100;22;168;53;167;351;25;139
+2020-07-15;2020;7;PE;"Pernambuco";"Recife";"Hospital Universitário Oswaldo Cruz";85;19;144;46;153;324;21;119
+2020-07-15;2020;7;CE;"Ceará";"Fortaleza";"Hospital Leonardo Da Vinci";88;19;147;47;149;315;22;122
+2020-07-15;2020;7;AM;"Amazonas";"Manaus";"Hospital Delphina Aziz";89;19;156;49;126;279;22;127
+2020-07-15;2020;7;DF;"Distrito Federal";"Brasília";"Hospital Regional da Asa Norte";75;17;128;41;140;297;19;106
+2020-07-15;2020;7;SC;"Santa Catarina";"Florianópolis";"Hospital Governador Celso Ramos";75;17;128;41;135;288;19;106
+2020-07-15;2020;7;GO;"Goiás";"Goiânia";"HCamp Goiânia";76;17;125;39;131;270;19;105
+2020-08-15;2020;8;SP;"São Paulo";"São Paulo";"Hospital das Clínicas FMUSP";212;46;353;111;378;792;53;294
+2020-08-15;2020;8;RJ;"Rio de Janeiro";"Rio de Janeiro";"Hospital Federal dos Servidores";130;28;215;68;234;486;33;179
+2020-08-15;2020;8;MG;"Minas Gerais";"Belo Horizonte";"Hospital Eduardo de Menezes";119;26;202;64;216;459;30;167
+2020-08-15;2020;8;RS;"Rio Grande do Sul";"Porto Alegre";"Hospital de Clínicas de POA";102;22;177;56;189;414;26;145
+2020-08-15;2020;8;PR;"Paraná";"Curitiba";"Complexo Hospitalar do Trabalhador";96;21;160;51;176;369;24;133
+2020-08-15;2020;8;BA;"Bahia";"Salvador";"Hospital Espanhol Referência";87;19;146;46;167;351;22;121
+2020-08-15;2020;8;PE;"Pernambuco";"Recife";"Hospital Universitário Oswaldo Cruz";74;16;125;39;153;324;19;103
+2020-08-15;2020;8;CE;"Ceará";"Fortaleza";"Hospital Leonardo Da Vinci";76;17;128;41;149;315;19;106
+2020-08-15;2020;8;AM;"Amazonas";"Manaus";"Hospital Delphina Aziz";78;17;138;43;126;279;20;112
+2020-08-15;2020;8;DF;"Distrito Federal";"Brasília";"Hospital Regional da Asa Norte";68;15;115;36;140;297;17;95
+2020-08-15;2020;8;SC;"Santa Catarina";"Florianópolis";"Hospital Governador Celso Ramos";68;15;116;36;135;288;17;96
+2020-08-15;2020;8;GO;"Goiás";"Goiânia";"HCamp Goiânia";68;15;112;36;131;270;17;94
+2020-09-15;2020;9;SP;"São Paulo";"São Paulo";"Hospital das Clínicas FMUSP";185;40;308;97;378;792;46;256
+2020-09-15;2020;9;RJ;"Rio de Janeiro";"Rio de Janeiro";"Hospital Federal dos Servidores";113;25;187;59;234;486;28;156
+2020-09-15;2020;9;MG;"Minas Gerais";"Belo Horizonte";"Hospital Eduardo de Menezes";103;22;174;55;216;459;26;144
+2020-09-15;2020;9;RS;"Rio Grande do Sul";"Porto Alegre";"Hospital de Clínicas de POA";87;19;151;48;189;414;22;124
+2020-09-15;2020;9;PR;"Paraná";"Curitiba";"Complexo Hospitalar do Trabalhador";81;18;135;43;176;369;20;112
+2020-09-15;2020;9;BA;"Bahia";"Salvador";"Hospital Espanhol Referência";73;16;122;39;167;351;18;101
+2020-09-15;2020;9;PE;"Pernambuco";"Recife";"Hospital Universitário Oswaldo Cruz";62;14;105;33;153;324;16;87
+2020-09-15;2020;9;CE;"Ceará";"Fortaleza";"Hospital Leonardo Da Vinci";65;14;109;35;149;315;16;90
+2020-09-15;2020;9;AM;"Amazonas";"Manaus";"Hospital Delphina Aziz";67;15;119;37;126;279;17;97
+2020-09-15;2020;9;DF;"Distrito Federal";"Brasília";"Hospital Regional da Asa Norte";59;13;100;32;140;297;15;83
+2020-09-15;2020;9;SC;"Santa Catarina";"Florianópolis";"Hospital Governador Celso Ramos";59;13;101;32;135;288;15;83
+2020-09-15;2020;9;GO;"Goiás";"Goiânia";"HCamp Goiânia";59;13;97;30;131;270;15;81
+2020-10-15;2020;10;SP;"São Paulo";"São Paulo";"Hospital das Clínicas FMUSP";172;38;287;91;378;792;43;239
+2020-10-15;2020;10;RJ;"Rio de Janeiro";"Rio de Janeiro";"Hospital Federal dos Servidores";105;23;173;55;234;486;26;145
+2020-10-15;2020;10;MG;"Minas Gerais";"Belo Horizonte";"Hospital Eduardo de Menezes";93;21;159;50;216;459;23;131
+2020-10-15;2020;10;RS;"Rio Grande do Sul";"Porto Alegre";"Hospital de Clínicas de POA";78;17;136;43;189;414;20;111
+2020-10-15;2020;10;PR;"Paraná";"Curitiba";"Complexo Hospitalar do Trabalhador";72;16;121;38;176;369;18;100
+2020-10-15;2020;10;BA;"Bahia";"Salvador";"Hospital Espanhol Referência";66;14;110;35;167;351;17;92
+2020-10-15;2020;10;PE;"Pernambuco";"Recife";"Hospital Universitário Oswaldo Cruz";57;12;96;30;153;324;14;80
+2020-10-15;2020;10;CE;"Ceará";"Fortaleza";"Hospital Leonardo Da Vinci";60;13;102;32;149;315;15;84
+2020-10-15;2020;10;AM;"Amazonas";"Manaus";"Hospital Delphina Aziz";62;14;111;35;126;279;16;90
+2020-10-15;2020;10;DF;"Distrito Federal";"Brasília";"Hospital Regional da Asa Norte";55;12;93;30;140;297;14;77
+2020-10-15;2020;10;SC;"Santa Catarina";"Florianópolis";"Hospital Governador Celso Ramos";55;12;93;30;135;288;14;77
+2020-10-15;2020;10;GO;"Goiás";"Goiânia";"HCamp Goiânia";54;12;88;28;131;270;14;74
+2020-11-15;2020;11;SP;"São Paulo";"São Paulo";"Hospital das Clínicas FMUSP";206;45;344;109;378;792;52;286
+2020-11-15;2020;11;RJ;"Rio de Janeiro";"Rio de Janeiro";"Hospital Federal dos Servidores";124;27;204;65;234;486;31;171
+2020-11-15;2020;11;MG;"Minas Gerais";"Belo Horizonte";"Hospital Eduardo de Menezes";109;24;185;59;216;459;27;153
+2020-11-15;2020;11;RS;"Rio Grande do Sul";"Porto Alegre";"Hospital de Clínicas de POA";90;20;158;50;189;414;23;129
+2020-11-15;2020;11;PR;"Paraná";"Curitiba";"Complexo Hospitalar do Trabalhador";84;19;141;45;176;369;21;117
+2020-11-15;2020;11;BA;"Bahia";"Salvador";"Hospital Espanhol Referência";78;17;131;41;167;351;20;109
+2020-11-15;2020;11;PE;"Pernambuco";"Recife";"Hospital Universitário Oswaldo Cruz";68;15;115;36;153;324;17;95
+2020-11-15;2020;11;CE;"Ceará";"Fortaleza";"Hospital Leonardo Da Vinci";73;16;122;39;149;315;18;101
+2020-11-15;2020;11;AM;"Amazonas";"Manaus";"Hospital Delphina Aziz";75;17;134;42;126;279;19;109
+2020-11-15;2020;11;DF;"Distrito Federal";"Brasília";"Hospital Regional da Asa Norte";66;15;112;35;140;297;17;93
+2020-11-15;2020;11;SC;"Santa Catarina";"Florianópolis";"Hospital Governador Celso Ramos";65;14;110;35;135;288;16;91
+2020-11-15;2020;11;GO;"Goiás";"Goiânia";"HCamp Goiânia";63;14;103;33;131;270;16;86
+2020-12-15;2020;12;SP;"São Paulo";"São Paulo";"Hospital das Clínicas FMUSP";237;52;397;125;378;792;59;330
+2020-12-15;2020;12;RJ;"Rio de Janeiro";"Rio de Janeiro";"Hospital Federal dos Servidores";140;31;233;73;234;486;35;194
+2020-12-15;2020;12;MG;"Minas Gerais";"Belo Horizonte";"Hospital Eduardo de Menezes";124;27;211;66;216;459;31;174
+2020-12-15;2020;12;RS;"Rio Grande do Sul";"Porto Alegre";"Hospital de Clínicas de POA";103;22;179;57;189;414;26;147
+2020-12-15;2020;12;PR;"Paraná";"Curitiba";"Complexo Hospitalar do Trabalhador";98;21;163;51;176;369;25;136
+2020-12-15;2020;12;BA;"Bahia";"Salvador";"Hospital Espanhol Referência";91;20;153;48;167;351;23;127
+2020-12-15;2020;12;PE;"Pernambuco";"Recife";"Hospital Universitário Oswaldo Cruz";80;18;135;43;153;324;20;112
+2020-12-15;2020;12;CE;"Ceará";"Fortaleza";"Hospital Leonardo Da Vinci";86;19;144;46;149;315;22;120
+2020-12-15;2020;12;AM;"Amazonas";"Manaus";"Hospital Delphina Aziz";89;19;156;49;126;279;22;127
+2020-12-15;2020;12;DF;"Distrito Federal";"Brasília";"Hospital Regional da Asa Norte";76;17;128;41;140;297;19;106
+2020-12-15;2020;12;SC;"Santa Catarina";"Florianópolis";"Hospital Governador Celso Ramos";74;16;125;40;135;288;19;103
+2020-12-15;2020;12;GO;"Goiás";"Goiânia";"HCamp Goiânia";71;16;117;37;131;270;18;98
